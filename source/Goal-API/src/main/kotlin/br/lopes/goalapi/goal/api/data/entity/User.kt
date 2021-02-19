@@ -5,12 +5,12 @@ import javax.persistence.*
 
 @Entity
 data class User constructor(
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long,
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long?,
 
         @Column(name = "name")
         var name:String,
 
-        @Column(name = "nickname")
+        @Column(name = "nickname", unique=true)
         var nickname:String,
 
         @Column(name = "dtcreate")
