@@ -11,3 +11,9 @@ fun UserEntity.toUserDb() = User(
         dtCreate = LocalDateTime.now(),
         dtUpdate = null
 )
+
+fun User.toUserEntity() = UserEntity(
+        id = this.id,
+        name = this.name,
+        nickname = this.nickname
+)

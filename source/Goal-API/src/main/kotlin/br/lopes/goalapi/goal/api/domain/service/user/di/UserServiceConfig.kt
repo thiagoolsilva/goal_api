@@ -1,6 +1,8 @@
 package br.lopes.goalapi.goal.api.domain.service.user.di
 
 import br.lopes.goalapi.goal.api.data.repository.UserRepositoryContract
+import br.lopes.goalapi.goal.api.domain.service.user.usecase.DeleteUserUC
+import br.lopes.goalapi.goal.api.domain.service.user.usecase.FindUserByIdUC
 import br.lopes.goalapi.goal.api.domain.service.user.usecase.SaveUserUC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -13,7 +15,17 @@ class UserServiceConfig {
     private lateinit var userRepositoryContract: UserRepositoryContract
 
     @Bean
-    fun createSaveUseCaseBean(): SaveUserUC {
+    fun createSaveUseCase(): SaveUserUC {
         return SaveUserUC(userRepositoryContract)
+    }
+
+    @Bean
+    fun createDeleteUseCase() : DeleteUserUC {
+        return DeleteUserUC(userRepositoryContract)
+    }
+
+    @Bean
+    fun createFindUserByIdUseCase() : FindUserByIdUC {
+        return FindUserByIdUC(userRepositoryContract)
     }
 }
