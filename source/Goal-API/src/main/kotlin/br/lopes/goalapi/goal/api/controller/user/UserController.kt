@@ -1,3 +1,19 @@
+/*
+ *   Copyright (c) 2020  Thiago Lopes da Silva
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package br.lopes.goalapi.goal.api.controller.user
 
 import br.lopes.goalapi.goal.api.controller.Constants
@@ -30,9 +46,8 @@ class UserController {
             @RequestBody @Valid userRequest: UserRequest,
             uriComponentsBuilder: UriComponentsBuilder
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
+        val apiContract = ApiContract<UserResponseDetails>(null,null)
         try {
-            val apiContract = ApiContract<UserResponseDetails>(null,null)
-
             val userEntity = userRequest.toUserEntity()
             val savedUser = userService.saveUser(userEntity).toUserResponse()
             val uri = uriComponentsBuilder.path(Constants.USER_PATH + "/{id}").buildAndExpand(savedUser.id).toUri()
@@ -41,8 +56,8 @@ class UserController {
 
             return ResponseEntity.created(uri).body(apiContract)
         } catch (error: Exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-        }
+            apiContract.error = ErrorResponse("unexpected error")
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)        }
 
     }
 
@@ -50,9 +65,8 @@ class UserController {
     fun updateUser(
             @RequestBody @Valid userRequest: UserRequest,
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
+        val apiContract = ApiContract<UserResponseDetails>(null,null)
         try {
-            val apiContract = ApiContract<UserResponseDetails>(null,null)
-
             if (userRequest.id != null) {
                 val response = userService.saveUser(userRequest.toUserEntity()).toUserResponse()
                 apiContract.body = response
@@ -63,7 +77,8 @@ class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiContract)
             }
         } catch (error: Exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            apiContract.error = ErrorResponse("unexpected error")
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
 
