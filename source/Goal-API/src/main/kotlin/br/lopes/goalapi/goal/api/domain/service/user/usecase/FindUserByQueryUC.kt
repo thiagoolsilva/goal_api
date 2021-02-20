@@ -14,15 +14,21 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.domain.service.user
+package br.lopes.goalapi.goal.api.domain.service.user.usecase
 
-import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
+import br.lopes.goalapi.goal.api.data.entity.User
+import br.lopes.goalapi.goal.api.data.repository.UserRepositoryContract
+import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
-interface UserServiceContract {
-    fun saveUser(userEntity: UserEntity):UserEntity
-    fun deleteUser(userId:Long)
-    fun getUserById(userId:Long): UserEntity
-    fun findUserByQuery(pageable:Pageable): Page<UserEntity>
+class FindUserByQueryUC @Autowired constructor(
+        private val userRepositoryContract: UserRepositoryContract
+): UseCaseContract<Pageable, Page<User>> {
+
+    override fun execute(input: Pageable): Page<User> {
+       return userRepositoryContract.findAll(input)
+    }
+
 }

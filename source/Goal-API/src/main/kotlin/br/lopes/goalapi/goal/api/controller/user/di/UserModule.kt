@@ -14,15 +14,22 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.domain.service.user
+package br.lopes.goalapi.goal.api.controller.user.di
 
-import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
+import br.lopes.goalapi.goal.api.controller.user.Handler
+import br.lopes.goalapi.goal.api.domain.service.user.UserServiceContract
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
-interface UserServiceContract {
-    fun saveUser(userEntity: UserEntity):UserEntity
-    fun deleteUser(userId:Long)
-    fun getUserById(userId:Long): UserEntity
-    fun findUserByQuery(pageable:Pageable): Page<UserEntity>
+@Configuration
+class UserModule {
+
+    @Autowired
+    private lateinit var userService: UserServiceContract
+
+    @Bean
+    fun createHandler(): Handler {
+        return Handler(userService)
+    }
 }
