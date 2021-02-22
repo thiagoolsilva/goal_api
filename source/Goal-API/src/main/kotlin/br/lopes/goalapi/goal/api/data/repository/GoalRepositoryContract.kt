@@ -16,11 +16,7 @@
 
 package br.lopes.goalapi.goal.api.data.repository
 
-import br.lopes.goalapi.goal.api.data.entity.User
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
+import br.lopes.goalapi.goal.api.data.entity.Goal
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface UserRepositoryContract: JpaRepository<User, Long> {
-    fun findByNickname(nickname:String, pageable: Pageable) : Page<User>
-}
+interface GoalRepositoryContract : JpaRepository<Goal, Long>

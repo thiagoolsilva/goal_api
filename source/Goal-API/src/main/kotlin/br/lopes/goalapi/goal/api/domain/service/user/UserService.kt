@@ -24,7 +24,6 @@ import br.lopes.goalapi.goal.api.domain.service.user.usecase.FindUserByQueryUC
 import br.lopes.goalapi.goal.api.domain.service.user.usecase.SaveUserUC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
@@ -47,10 +46,9 @@ class UserService @Autowired constructor(
         return findUserByIdUC.execute(userId).toUserEntity()
     }
 
-    override fun findUserByQuery(pageable: Pageable): Page<UserEntity> {
-        return findUserByQueryUC.execute(pageable).map {
+    override fun findUserByQuery(params: Map<String, Any>): Page<UserEntity> {
+        return findUserByQueryUC.execute(params).map {
             it.toUserEntity()
         }
     }
-
 }

@@ -14,13 +14,22 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.data.repository
+package br.lopes.goalapi.goal.api.controller.user.di
 
-import br.lopes.goalapi.goal.api.data.entity.User
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.repository.JpaRepository
+import br.lopes.goalapi.goal.api.controller.user.Handler
+import br.lopes.goalapi.goal.api.domain.service.user.UserServiceContract
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
-interface UserRepositoryContract: JpaRepository<User, Long> {
-    fun findByNickname(nickname:String, pageable: Pageable) : Page<User>
+@Configuration
+class UserPresentationModule {
+
+    @Autowired
+    private lateinit var userService: UserServiceContract
+
+    @Bean
+    fun createHandler(): Handler {
+        return Handler(userService)
+    }
 }

@@ -14,22 +14,28 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.user.di
+package br.lopes.goalapi.goal.api.domain.service.goal.di
 
-import br.lopes.goalapi.goal.api.controller.user.Handler
-import br.lopes.goalapi.goal.api.domain.service.user.UserServiceContract
+import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalByIdUC
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalHistoryById
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class UserModule {
+class GoalDomainModule {
 
     @Autowired
-    private lateinit var userService: UserServiceContract
+    private lateinit var goalRepositoryContract: GoalRepositoryContract
 
     @Bean
-    fun createHandler(): Handler {
-        return Handler(userService)
+    fun createGetGoalById(): GetGoalByIdUC {
+        return GetGoalByIdUC(goalRepositoryContract)
+    }
+
+    @Bean
+    fun createGetGoalHistoryById(): GetGoalHistoryById {
+        return GetGoalHistoryById()
     }
 }

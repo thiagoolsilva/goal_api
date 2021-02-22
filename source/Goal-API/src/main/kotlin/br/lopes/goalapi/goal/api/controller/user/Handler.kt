@@ -21,6 +21,7 @@ import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
 import br.lopes.goalapi.goal.api.controller.user.mapper.toUserEntity
 import br.lopes.goalapi.goal.api.controller.user.mapper.toUserResponse
+import br.lopes.goalapi.goal.api.domain.service.user.UserServiceConstants
 import br.lopes.goalapi.goal.api.domain.service.user.UserServiceContract
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -40,10 +41,16 @@ class Handler @Autowired constructor(
         return response
     }
 
-    fun getUserByQuery(pageable: Pageable): ApiContract<Page<UserResponseDetails>> {
+    fun getUserByQuery(nickname: String?, pageable: Pageable): ApiContract<Page<UserResponseDetails>> {
         val apiContract = ApiContract<Page<UserResponseDetails>>(null, null)
+        val params = mutableMapOf<String, Any>()
 
-        val userPage = userService.findUserByQuery(pageable).map { it.toUserResponse() }
+        if (nickname != null) {
+            params[UserServiceConstants.QUERY_NICKNAME_PARAM] = nickname
+        }
+        params[UserServiceConstants.QUERY_PAGEABLE_PARAM] = pageable
+
+        val userPage = userService.findUserByQuery(params).map { it.toUserResponse() }
         apiContract.body = userPage
 
         return apiContract

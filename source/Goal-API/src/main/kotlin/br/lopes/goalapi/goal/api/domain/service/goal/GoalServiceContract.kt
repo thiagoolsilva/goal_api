@@ -14,13 +14,14 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.data.repository
+package br.lopes.goalapi.goal.api.domain.service.goal
 
-import br.lopes.goalapi.goal.api.data.entity.User
+import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
+import br.lopes.goalapi.goal.api.domain.service.goal.model.HistoryEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.repository.JpaRepository
 
-interface UserRepositoryContract: JpaRepository<User, Long> {
-    fun findByNickname(nickname:String, pageable: Pageable) : Page<User>
+interface GoalServiceContract {
+    fun findGoalById(id:Long): GoalEntity
+    fun findGoalHistoryById(params:Map<String, Any>): Page<HistoryEntity>
 }

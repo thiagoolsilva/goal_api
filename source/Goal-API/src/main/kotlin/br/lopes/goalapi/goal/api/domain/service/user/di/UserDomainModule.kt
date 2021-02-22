@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class UserServiceConfig {
+class UserDomainModule {
 
     @Autowired
     private lateinit var userRepositoryContract: UserRepositoryContract

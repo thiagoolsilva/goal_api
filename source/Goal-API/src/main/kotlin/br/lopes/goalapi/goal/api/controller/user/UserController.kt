@@ -21,7 +21,6 @@ import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.contract.ErrorResponse
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
-import br.lopes.goalapi.goal.api.domain.service.user.UserServiceContract
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -33,11 +32,8 @@ import javax.transaction.Transactional
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(Constants.USER_PATH)
+@RequestMapping(Constants.User.USER_PATH)
 class UserController {
-
-    @Autowired
-    private lateinit var userService: UserServiceContract
 
     @Autowired
     private lateinit var handler: Handler
@@ -53,7 +49,7 @@ class UserController {
         try {
             apiContract = handler.createOrUpdateUser(userRequest)
             val userId = apiContract.body?.id
-            val uri = uriComponentsBuilder.path(Constants.USER_PATH + "/{id}").buildAndExpand(userId).toUri()
+            val uri = uriComponentsBuilder.path(Constants.User.USER_PATH + "/{id}").buildAndExpand(userId).toUri()
 
             return ResponseEntity.created(uri).body(apiContract)
         } catch (error: Exception) {
@@ -103,11 +99,12 @@ class UserController {
 
     @GetMapping
     fun getUsers(
+            @RequestParam(required = false) nickname:String?,
             @Valid pageable: Pageable
     ): ResponseEntity<ApiContract<Page<UserResponseDetails>>> {
         var apiContract = ApiContract<Page<UserResponseDetails>>(null, null)
         try {
-            apiContract = handler.getUserByQuery(pageable)
+            apiContract = handler.getUserByQuery(nickname, pageable)
 
             return ResponseEntity.ok().body(apiContract)
         } catch (error: Exception) {

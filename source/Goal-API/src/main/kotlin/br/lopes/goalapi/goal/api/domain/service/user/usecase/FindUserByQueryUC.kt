@@ -19,16 +19,25 @@ package br.lopes.goalapi.goal.api.domain.service.user.usecase
 import br.lopes.goalapi.goal.api.data.entity.User
 import br.lopes.goalapi.goal.api.data.repository.UserRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
+import br.lopes.goalapi.goal.api.domain.service.user.UserServiceConstants
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 class FindUserByQueryUC @Autowired constructor(
         private val userRepositoryContract: UserRepositoryContract
-): UseCaseContract<Pageable, Page<User>> {
+): UseCaseContract<Map<String, Any>, Page<User>> {
 
-    override fun execute(input: Pageable): Page<User> {
-       return userRepositoryContract.findAll(input)
+    override fun execute(input: Map<String, Any>): Page<User> {
+        val pageable = input[UserServiceConstants.QUERY_PAGEABLE_PARAM] as Pageable
+        val nickname = input[UserServiceConstants.QUERY_NICKNAME_PARAM] as String?
+
+        return if(nickname != null) {
+            userRepositoryContract.findByNickname(nickname, pageable)
+        } else {
+            userRepositoryContract.findAll(pageable)
+        }
     }
+
 
 }

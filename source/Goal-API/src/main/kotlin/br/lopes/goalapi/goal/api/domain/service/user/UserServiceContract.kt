@@ -18,11 +18,10 @@ package br.lopes.goalapi.goal.api.domain.service.user
 
 import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 
 interface UserServiceContract {
     fun saveUser(userEntity: UserEntity):UserEntity
     fun deleteUser(userId:Long)
     fun getUserById(userId:Long): UserEntity
-    fun findUserByQuery(pageable:Pageable): Page<UserEntity>
+    fun findUserByQuery(params:Map<String, Any>): Page<UserEntity>
 }

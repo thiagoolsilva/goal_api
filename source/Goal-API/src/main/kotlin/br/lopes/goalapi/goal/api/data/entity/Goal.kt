@@ -21,7 +21,7 @@ import javax.persistence.*
 
 @Entity
 data class Goal constructor(
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long,
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long?,
 
         @Column(name = "title")
         var title:String,
@@ -41,7 +41,7 @@ data class Goal constructor(
         @Column(name = "dtupdate")
         var dtUpdate:LocalDateTime?,
 
-        @OneToMany(mappedBy = "goal", targetEntity = History::class)
+        @OneToMany(mappedBy = "goal", targetEntity = History::class, fetch = FetchType.LAZY)
         var history: List<History> = mutableListOf(),
 
         @ManyToOne(fetch = FetchType.LAZY)

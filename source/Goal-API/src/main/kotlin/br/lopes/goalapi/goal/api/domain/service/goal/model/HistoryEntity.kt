@@ -14,13 +14,11 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.data.repository
+package br.lopes.goalapi.goal.api.domain.service.goal.model
 
-import br.lopes.goalapi.goal.api.data.entity.User
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.repository.JpaRepository
+import java.time.LocalDateTime
 
-interface UserRepositoryContract: JpaRepository<User, Long> {
-    fun findByNickname(nickname:String, pageable: Pageable) : Page<User>
-}
+data class HistoryEntity constructor(
+        val dtEvent: LocalDateTime,
+        val value:Double
+)

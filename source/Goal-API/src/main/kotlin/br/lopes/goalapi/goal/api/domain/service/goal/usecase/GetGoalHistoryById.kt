@@ -14,8 +14,16 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.user.contract
+package br.lopes.goalapi.goal.api.domain.service.goal.usecase
 
-data class UserResponse constructor(
-    val id:Long
-)
+import br.lopes.goalapi.goal.api.data.entity.History
+import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
+import org.springframework.data.domain.Page
+
+class GetGoalHistoryById: UseCaseContract<Map<String, Any>, Page<History>> {
+    override fun execute(input: Map<String, Any>): Page<History> {
+        throw NotImplementedError("method not implemented")
+    }
+
+
+}
