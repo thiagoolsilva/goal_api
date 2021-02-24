@@ -19,9 +19,10 @@ package br.lopes.goalapi.goal.api.domain.service.goal.model
 import java.time.LocalDateTime
 
 data class GoalEntity constructor(
-    val title:String,
-    val description:String,
-    val totalPrice:Double,
-    val dtEndGoal:LocalDateTime,
-    val history:List<HistoryEntity> = mutableListOf()
+        val id: Long?,
+        val userId: Long,
+        val title: String,
+        val description: String,
+        val totalPrice: Double,
+        val dtEndGoal: LocalDateTime
 )

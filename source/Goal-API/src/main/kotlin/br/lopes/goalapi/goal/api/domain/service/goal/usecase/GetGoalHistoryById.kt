@@ -17,13 +17,20 @@
 package br.lopes.goalapi.goal.api.domain.service.goal.usecase
 
 import br.lopes.goalapi.goal.api.data.entity.History
+import br.lopes.goalapi.goal.api.data.repository.HistoryRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
+import br.lopes.goalapi.goal.api.domain.service.goal.GoalConstants
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
-class GetGoalHistoryById: UseCaseContract<Map<String, Any>, Page<History>> {
+class GetGoalHistoryById @Autowired constructor(
+        private val historyRepositoryContract: HistoryRepositoryContract
+)  : UseCaseContract<Map<String, Any>, Page<History>> {
     override fun execute(input: Map<String, Any>): Page<History> {
-        throw NotImplementedError("method not implemented")
+        val pageable = input[GoalConstants.PARAMS.QUERY_PAGEABLE_PARAM] as Pageable
+        val id = input[GoalConstants.PARAMS.QUERY_ID_PARAM] as Long
+
+        return historyRepositoryContract.findByGoalId(id, pageable)
     }
-
-
 }

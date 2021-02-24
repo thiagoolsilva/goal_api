@@ -16,7 +16,11 @@
 
 package br.lopes.goalapi.goal.api.data.repository
 
-import br.lopes.goalapi.goal.api.data.entity.Goal
+import br.lopes.goalapi.goal.api.data.entity.History
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface GoalRepositoryContract : JpaRepository<Goal, Long>
+interface HistoryRepositoryContract : JpaRepository<History, Long> {
+    fun findByGoalId(goalId:Long, pageable: Pageable) : Page<History>
+}

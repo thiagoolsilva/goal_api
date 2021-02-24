@@ -19,6 +19,9 @@ package br.lopes.goalapi.goal.api.controller.goal
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.goal.contract.GoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.contract.GoalResponse
+import br.lopes.goalapi.goal.api.controller.goal.contract.SaveGoalRequest
+import br.lopes.goalapi.goal.api.controller.goal.contract.UpdateGoalRequest
+import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalResponse
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalConstants
@@ -45,4 +48,23 @@ class Handler constructor(
 
         return apiContract
     }
+
+    fun saveGoal(saveGoalRequest: SaveGoalRequest): ApiContract<GoalResponse> {
+        val apiContract = ApiContract<GoalResponse>(null, null)
+
+        val goalEntity = saveGoalRequest.toGoalEntity()
+        apiContract.body = goalServiceContract.saveGoal(goalEntity).toGoalResponse()
+
+        return apiContract
+    }
+
+    fun updateGoal(updateGoalRequest: UpdateGoalRequest): ApiContract<GoalResponse> {
+        val apiContract = ApiContract<GoalResponse>(null, null)
+
+        val goalEntity = updateGoalRequest.toGoalEntity()
+        apiContract.body = goalServiceContract.updateGoal(goalEntity).toGoalResponse()
+
+        return apiContract
+    }
+
 }

@@ -18,7 +18,9 @@ package br.lopes.goalapi.goal.api.domain.service.goal.model
 
 import java.time.LocalDateTime
 
-data class HistoryEntity constructor(
+data class GoalHistoryEntity constructor(
+        val goalId: Long?,
+        val id:Long?,
         val dtEvent: LocalDateTime,
         val value:Double
 )

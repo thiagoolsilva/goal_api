@@ -18,18 +18,50 @@ package br.lopes.goalapi.goal.api.domain.service.goal.mapper
 
 import br.lopes.goalapi.goal.api.data.entity.Goal
 import br.lopes.goalapi.goal.api.data.entity.History
+import br.lopes.goalapi.goal.api.data.entity.User
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
-import br.lopes.goalapi.goal.api.domain.service.goal.model.HistoryEntity
+import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
+import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
+import java.time.LocalDateTime
 
 fun Goal.toGoalEntity() = GoalEntity(
+        id = this.id,
         title = this.title,
         description = this.description,
         totalPrice = this.totalPrice,
         dtEndGoal = this.dtEndGoal,
-        history = this.history.map { it.toHistoryEntity() }
+        userId = this.user.id ?: -1
 )
 
-fun History.toHistoryEntity() = HistoryEntity(
+fun History.toHistoryEntity() = GoalHistoryEntity(
+        goalId = this.goal.id,
+        id = this.id,
         dtEvent = this.dtEvent,
         value = this.value
 )
+
+fun GoalHistoryEntity.toHistoryDb(goal:Goal) = History(
+        id = this.id,
+        dtEvent = this.dtEvent,
+        value = this.value,
+        goal = goal
+)
+
+fun GoalEntity.toGoalDb(user: User) = Goal(
+        user = user,
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        totalPrice = this.totalPrice,
+        dtEndGoal = this.dtEndGoal,
+        dtCreate = LocalDateTime.now(),
+        dtUpdate = LocalDateTime.now()
+)
+
+fun HistoryEntity.toGoalHistory() = GoalHistoryEntity(
+        goalId = this.goalId,
+        id = this.id,
+        dtEvent = this.dtEvent,
+        value = this.value
+)
+

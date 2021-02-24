@@ -14,9 +14,14 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.data.repository
+package br.lopes.goalapi.goal.api.controller.goal.contract
 
-import br.lopes.goalapi.goal.api.data.entity.Goal
-import org.springframework.data.jpa.repository.JpaRepository
+import java.time.LocalDateTime
 
-interface GoalRepositoryContract : JpaRepository<Goal, Long>
+data class UpdateGoalRequest constructor(
+        val id: Long,
+        val title:String,
+        val description:String,
+        val totalPrice:Double,
+        val dtEndGoal: LocalDateTime
+)

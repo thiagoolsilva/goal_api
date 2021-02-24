@@ -16,27 +16,39 @@
 
 package br.lopes.goalapi.goal.api.domain.service.goal
 
+import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toHistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
-import br.lopes.goalapi.goal.api.domain.service.goal.model.HistoryEntity
+import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalByIdUC
 import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalHistoryById
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.SaveGoalUC
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.UpdateGoalUC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
 class GoalService  @Autowired constructor(
         private val getGoalByIdUC: GetGoalByIdUC,
-        private val getGoalHistoryById: GetGoalHistoryById
+        private val getGoalHistoryById: GetGoalHistoryById,
+        private val saveGoalUC: SaveGoalUC,
+        private val updateGoalUC: UpdateGoalUC
 ): GoalServiceContract {
 
     override fun findGoalById(id: Long): GoalEntity {
         return getGoalByIdUC.execute(id)
     }
 
-    override fun findGoalHistoryById(params: Map<String, Any>): Page<HistoryEntity> {
+    override fun updateGoal(goalEntity: GoalEntity): GoalEntity {
+      return updateGoalUC.execute(goalEntity).toGoalEntity()
+    }
+
+    override fun findGoalHistoryById(params: Map<String, Any>): Page<GoalHistoryEntity> {
         return getGoalHistoryById.execute(params).map { it.toHistoryEntity() }
+    }
+
+    override fun saveGoal(goalEntity: GoalEntity): GoalEntity {
+        return saveGoalUC.execute(goalEntity).toGoalEntity()
     }
 }

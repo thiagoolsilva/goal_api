@@ -21,7 +21,7 @@ import javax.persistence.*
 
 @Entity
 data class History constructor(
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long,
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long?,
 
         @Column(name = "dtevent")
         val dtEvent:LocalDateTime,

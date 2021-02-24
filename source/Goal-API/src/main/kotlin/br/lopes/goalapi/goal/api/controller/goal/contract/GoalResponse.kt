@@ -19,6 +19,7 @@ package br.lopes.goalapi.goal.api.controller.goal.contract
 import java.time.LocalDateTime
 
 data class GoalResponse constructor(
+        val id: Long,
         val title:String,
         val description:String,
         val totalPrice:Double,

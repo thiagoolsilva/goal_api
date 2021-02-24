@@ -21,5 +21,4 @@ class GoalConstants {
         const val QUERY_PAGEABLE_PARAM = "pageable"
         const val QUERY_ID_PARAM = "id"
     }
-
 }

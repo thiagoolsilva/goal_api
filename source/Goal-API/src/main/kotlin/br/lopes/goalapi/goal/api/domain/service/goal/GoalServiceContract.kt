@@ -17,11 +17,12 @@
 package br.lopes.goalapi.goal.api.domain.service.goal
 
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
-import br.lopes.goalapi.goal.api.domain.service.goal.model.HistoryEntity
+import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 
 interface GoalServiceContract {
     fun findGoalById(id:Long): GoalEntity
-    fun findGoalHistoryById(params:Map<String, Any>): Page<HistoryEntity>
+    fun updateGoal(goalEntity: GoalEntity): GoalEntity
+    fun findGoalHistoryById(params:Map<String, Any>): Page<GoalHistoryEntity>
+    fun saveGoal(goalEntity: GoalEntity) : GoalEntity
 }

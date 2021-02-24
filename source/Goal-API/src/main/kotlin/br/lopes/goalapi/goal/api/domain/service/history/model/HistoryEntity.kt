@@ -14,9 +14,13 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.data.repository
+package br.lopes.goalapi.goal.api.domain.service.history.model
 
-import br.lopes.goalapi.goal.api.data.entity.Goal
-import org.springframework.data.jpa.repository.JpaRepository
+import java.time.LocalDateTime
 
-interface GoalRepositoryContract : JpaRepository<Goal, Long>
+data class HistoryEntity constructor(
+        val goalId: Long?,
+        val id:Long?,
+        val dtEvent: LocalDateTime,
+        val value:Double
+)

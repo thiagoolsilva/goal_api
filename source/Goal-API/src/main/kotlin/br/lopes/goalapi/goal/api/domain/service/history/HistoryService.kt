@@ -14,9 +14,16 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.data.repository
+package br.lopes.goalapi.goal.api.domain.service.history
 
-import br.lopes.goalapi.goal.api.data.entity.Goal
-import org.springframework.data.jpa.repository.JpaRepository
+import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
+import org.springframework.data.domain.Page
+import org.springframework.stereotype.Service
 
-interface GoalRepositoryContract : JpaRepository<Goal, Long>
+@Service
+class HistoryService : HistoryContract {
+    override fun findGoalHistoryById(params: Map<String, Any>): Page<HistoryEntity> {
+        TODO("Not yet implemented")
+    }
+
+}

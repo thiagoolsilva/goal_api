@@ -17,8 +17,12 @@
 package br.lopes.goalapi.goal.api.domain.service.goal.di
 
 import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
+import br.lopes.goalapi.goal.api.data.repository.HistoryRepositoryContract
+import br.lopes.goalapi.goal.api.data.repository.UserRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalByIdUC
 import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalHistoryById
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.SaveGoalUC
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.UpdateGoalUC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,6 +33,12 @@ class GoalDomainModule {
     @Autowired
     private lateinit var goalRepositoryContract: GoalRepositoryContract
 
+    @Autowired
+    private lateinit var userRepositoryContract: UserRepositoryContract
+
+    @Autowired
+    private lateinit var historyRepositoryContract: HistoryRepositoryContract
+
     @Bean
     fun createGetGoalById(): GetGoalByIdUC {
         return GetGoalByIdUC(goalRepositoryContract)
@@ -36,6 +46,16 @@ class GoalDomainModule {
 
     @Bean
     fun createGetGoalHistoryById(): GetGoalHistoryById {
-        return GetGoalHistoryById()
+        return GetGoalHistoryById(historyRepositoryContract)
+    }
+
+    @Bean
+    fun createGoalSaveGoalUC(): SaveGoalUC {
+        return SaveGoalUC(goalRepositoryContract, userRepositoryContract)
+    }
+
+    @Bean
+    fun createGoalUpdateGoalUC(): UpdateGoalUC {
+        return UpdateGoalUC(goalRepositoryContract)
     }
 }

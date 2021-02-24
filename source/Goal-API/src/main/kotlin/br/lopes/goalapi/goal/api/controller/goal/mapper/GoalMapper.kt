@@ -18,17 +18,38 @@ package br.lopes.goalapi.goal.api.controller.goal.mapper
 
 import br.lopes.goalapi.goal.api.controller.goal.contract.GoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.contract.GoalResponse
+import br.lopes.goalapi.goal.api.controller.goal.contract.SaveGoalRequest
+import br.lopes.goalapi.goal.api.controller.goal.contract.UpdateGoalRequest
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
-import br.lopes.goalapi.goal.api.domain.service.goal.model.HistoryEntity
+import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
 
 fun GoalEntity.toGoalResponse() = GoalResponse(
+        id = this.id ?: 0,
         title = this.title,
         description = this.description,
         totalPrice = this.totalPrice,
         dtEndGoal = this.dtEndGoal
 )
 
-fun HistoryEntity.toGoalHistoryResponse() = GoalHistoryResponse(
+fun GoalHistoryEntity.toGoalHistoryResponse() = GoalHistoryResponse(
         dtEvent = this.dtEvent,
         value = this.value
+)
+
+fun SaveGoalRequest.toGoalEntity() = GoalEntity(
+        title = this.title,
+        description = this.description,
+        totalPrice = this.totalPrice,
+        dtEndGoal = this.dtEndGoal,
+        id = this.id,
+        userId = this.userId
+)
+
+fun UpdateGoalRequest.toGoalEntity() = GoalEntity(
+        title = this.title,
+        description = this.description,
+        totalPrice = this.totalPrice,
+        dtEndGoal = this.dtEndGoal,
+        id = this.id,
+        userId = 0
 )
