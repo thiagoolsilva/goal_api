@@ -14,14 +14,11 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.domain.service.history
+package br.lopes.goalapi.goal.api.controller.goal.contract
 
-import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
-import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
-@Service
-class HistoryService : HistoryServiceContract {
-    override fun saveGoalHIstoryById(goalId: Long, historyEntity: HistoryEntity): HistoryEntity {
-        TODO("Not yet implemented")
-    }
-}
+data class SaveGoalHistoryRequest constructor(
+        val dtEvent: LocalDateTime,
+        val value:Double
+)

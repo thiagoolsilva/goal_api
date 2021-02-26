@@ -14,14 +14,16 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.domain.service.history
+package br.lopes.goalapi.goal.api.domain.service.goal.usecase
 
-import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
-import org.springframework.stereotype.Service
+import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
+import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
+import org.springframework.beans.factory.annotation.Autowired
 
-@Service
-class HistoryService : HistoryServiceContract {
-    override fun saveGoalHIstoryById(goalId: Long, historyEntity: HistoryEntity): HistoryEntity {
-        TODO("Not yet implemented")
+class DeleteGoalUC @Autowired constructor(
+        private val goalRepositoryContract: GoalRepositoryContract
+) : UseCaseContract<Long, Unit> {
+    override fun execute(input: Long) {
+        goalRepositoryContract.deleteById(input)
     }
 }

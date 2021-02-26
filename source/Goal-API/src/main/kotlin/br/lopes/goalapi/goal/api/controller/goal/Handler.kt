@@ -17,20 +17,20 @@
 package br.lopes.goalapi.goal.api.controller.goal
 
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
-import br.lopes.goalapi.goal.api.controller.goal.contract.GoalHistoryResponse
-import br.lopes.goalapi.goal.api.controller.goal.contract.GoalResponse
-import br.lopes.goalapi.goal.api.controller.goal.contract.SaveGoalRequest
-import br.lopes.goalapi.goal.api.controller.goal.contract.UpdateGoalRequest
+import br.lopes.goalapi.goal.api.controller.goal.contract.*
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalResponse
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalConstants
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
+import br.lopes.goalapi.goal.api.domain.service.history.HistoryService
+import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 class Handler constructor(
-       private val goalServiceContract: GoalServiceContract
+       private val goalServiceContract: GoalServiceContract,
+       private val historyService: HistoryServiceContract
 ) {
     fun getGoalById(id: Long): ApiContract<GoalResponse> {
         val response = ApiContract<GoalResponse>(null, null)
@@ -47,6 +47,10 @@ class Handler constructor(
         apiContract.body = goalServiceContract.findGoalHistoryById(params).map { it.toGoalHistoryResponse() }
 
         return apiContract
+    }
+
+    fun createGoalHistoryById(id: Long, history: SaveGoalHistoryRequest) : ApiContract<GoalHistoryResponse> {
+        throw NotImplementedError("not implemented")
     }
 
     fun saveGoal(saveGoalRequest: SaveGoalRequest): ApiContract<GoalResponse> {
@@ -67,4 +71,7 @@ class Handler constructor(
         return apiContract
     }
 
+    fun deleteGoalById(id: Long) {
+        goalServiceContract.deleteById(id)
+    }
 }

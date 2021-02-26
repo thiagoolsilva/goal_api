@@ -22,6 +22,5 @@ data class UpdateGoalRequest constructor(
         val id: Long,
         val title:String,
         val description:String,
-        val totalPrice:Double,
         val dtEndGoal: LocalDateTime
 )

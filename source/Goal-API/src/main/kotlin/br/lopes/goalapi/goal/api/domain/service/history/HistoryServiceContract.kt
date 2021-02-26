@@ -17,8 +17,7 @@
 package br.lopes.goalapi.goal.api.domain.service.history
 
 import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
-import org.springframework.data.domain.Page
 
-interface HistoryContract {
-    fun findGoalHistoryById(params:Map<String, Any>): Page<HistoryEntity>
+interface HistoryServiceContract {
+    fun saveGoalHIstoryById(goalId: Long, historyEntity: HistoryEntity) : HistoryEntity
 }

@@ -23,5 +23,6 @@ data class GoalResponse constructor(
         val title:String,
         val description:String,
         val totalPrice:Double,
-        val dtEndGoal: LocalDateTime,
+        val amount: Double,
+        val dtEndGoal: LocalDateTime
 )

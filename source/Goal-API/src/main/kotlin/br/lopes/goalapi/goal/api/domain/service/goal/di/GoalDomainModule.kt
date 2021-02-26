@@ -19,13 +19,13 @@ package br.lopes.goalapi.goal.api.domain.service.goal.di
 import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
 import br.lopes.goalapi.goal.api.data.repository.HistoryRepositoryContract
 import br.lopes.goalapi.goal.api.data.repository.UserRepositoryContract
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalByIdUC
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalHistoryById
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.SaveGoalUC
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.UpdateGoalUC
+import br.lopes.goalapi.goal.api.domain.service.goal.GoalService
+import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 
 @Configuration
 class GoalDomainModule {
@@ -38,6 +38,20 @@ class GoalDomainModule {
 
     @Autowired
     private lateinit var historyRepositoryContract: HistoryRepositoryContract
+
+    @Bean
+    @Primary
+    fun createGoalService(): GoalServiceContract {
+        val useCases = mapOf<String, Any>(
+                GetGoalByIdUC::class.toString() to createGetGoalById(),
+                GetGoalHistoryById::class.toString() to createGetGoalHistoryById(),
+                SaveGoalUC::class.toString() to createGoalSaveGoalUC(),
+                UpdateGoalUC::class.toString() to createGoalUpdateGoalUC(),
+                DeleteGoalUC::class.toString() to createGoalDeleteGoalByIdUC()
+        )
+
+        return GoalService(useCases)
+    }
 
     @Bean
     fun createGetGoalById(): GetGoalByIdUC {
@@ -58,4 +72,10 @@ class GoalDomainModule {
     fun createGoalUpdateGoalUC(): UpdateGoalUC {
         return UpdateGoalUC(goalRepositoryContract)
     }
+
+    @Bean
+    fun createGoalDeleteGoalByIdUC(): DeleteGoalUC {
+        return DeleteGoalUC(goalRepositoryContract)
+    }
+
 }

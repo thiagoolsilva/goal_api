@@ -34,12 +34,11 @@ class UpdateGoalUC @Autowired constructor(
             goalDb.description = input.description
             goalDb.dtEndGoal = input.dtEndGoal
             goalDb.title = input.title
-            goalDb.totalPrice = input.totalPrice
             goalDb.dtUpdate = LocalDateTime.now()
 
             return goalRepositoryContract.save(goalDb)
         } else {
-            throw IllegalArgumentException("This operation save is not supported on SaveGoalUC")
+            throw IllegalArgumentException("The operation save is not supported on SaveGoalUC")
         }
     }
 }

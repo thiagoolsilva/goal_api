@@ -24,5 +24,6 @@ data class GoalEntity constructor(
         val title: String,
         val description: String,
         val totalPrice: Double,
+        val amount: Double,
         val dtEndGoal: LocalDateTime
 )

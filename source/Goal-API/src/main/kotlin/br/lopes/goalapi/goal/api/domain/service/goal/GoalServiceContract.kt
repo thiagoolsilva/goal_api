@@ -25,4 +25,5 @@ interface GoalServiceContract {
     fun updateGoal(goalEntity: GoalEntity): GoalEntity
     fun findGoalHistoryById(params:Map<String, Any>): Page<GoalHistoryEntity>
     fun saveGoal(goalEntity: GoalEntity) : GoalEntity
+    fun deleteById(id: Long)
 }

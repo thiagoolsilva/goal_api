@@ -20,35 +20,38 @@ import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toHistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalByIdUC
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.GetGoalHistoryById
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.SaveGoalUC
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.UpdateGoalUC
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 
 @Service
-class GoalService  @Autowired constructor(
-        private val getGoalByIdUC: GetGoalByIdUC,
-        private val getGoalHistoryById: GetGoalHistoryById,
-        private val saveGoalUC: SaveGoalUC,
-        private val updateGoalUC: UpdateGoalUC
-): GoalServiceContract {
+class GoalService @Autowired constructor(
+        private val useCases: Map<String, Any>
+) : GoalServiceContract {
 
     override fun findGoalById(id: Long): GoalEntity {
+        val getGoalByIdUC = useCases[GetGoalByIdUC::class.toString()] as GetGoalByIdUC
         return getGoalByIdUC.execute(id)
     }
 
     override fun updateGoal(goalEntity: GoalEntity): GoalEntity {
-      return updateGoalUC.execute(goalEntity).toGoalEntity()
+        val updateGoalUC = useCases[UpdateGoalUC::class.toString()] as UpdateGoalUC
+        return updateGoalUC.execute(goalEntity).toGoalEntity()
     }
 
     override fun findGoalHistoryById(params: Map<String, Any>): Page<GoalHistoryEntity> {
+        val getGoalHistoryById = useCases[GetGoalHistoryById::class.toString()] as GetGoalHistoryById
         return getGoalHistoryById.execute(params).map { it.toHistoryEntity() }
     }
 
     override fun saveGoal(goalEntity: GoalEntity): GoalEntity {
+        val saveGoalUC = useCases[SaveGoalUC::class.toString()] as SaveGoalUC
         return saveGoalUC.execute(goalEntity).toGoalEntity()
+    }
+
+    override fun deleteById(id: Long) {
+        val deleteGoalUC = useCases[DeleteGoalUC::class.toString()] as DeleteGoalUC
+        return deleteGoalUC.execute(id)
     }
 }

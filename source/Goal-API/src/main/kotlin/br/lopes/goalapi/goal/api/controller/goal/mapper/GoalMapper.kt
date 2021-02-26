@@ -28,6 +28,7 @@ fun GoalEntity.toGoalResponse() = GoalResponse(
         title = this.title,
         description = this.description,
         totalPrice = this.totalPrice,
+        amount = this.amount,
         dtEndGoal = this.dtEndGoal
 )
 
@@ -42,14 +43,16 @@ fun SaveGoalRequest.toGoalEntity() = GoalEntity(
         totalPrice = this.totalPrice,
         dtEndGoal = this.dtEndGoal,
         id = this.id,
-        userId = this.userId
+        userId = this.userId,
+        amount = 0.0
 )
 
 fun UpdateGoalRequest.toGoalEntity() = GoalEntity(
         title = this.title,
         description = this.description,
-        totalPrice = this.totalPrice,
+        totalPrice = 0.0,
         dtEndGoal = this.dtEndGoal,
         id = this.id,
-        userId = 0
+        userId = 0,
+        amount = 0.0
 )
