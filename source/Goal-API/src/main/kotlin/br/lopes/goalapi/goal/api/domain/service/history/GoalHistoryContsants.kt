@@ -14,11 +14,12 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.domain.service.goal
+package br.lopes.goalapi.goal.api.domain.service.history
 
-class GoalConstants {
-     object PARAMS {
-        const val QUERY_PAGEABLE_PARAM = "pageable"
-        const val QUERY_ID_PARAM = "id"
+class GoalHistoryContsants {
+
+    object SaveParams {
+        const val GOAL_ID = "goal_id"
+        const val HISTORY_CONTENT = "history"
     }
 }

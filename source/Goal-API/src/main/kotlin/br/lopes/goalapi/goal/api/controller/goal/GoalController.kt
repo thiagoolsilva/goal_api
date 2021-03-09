@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.UnexpectedRollbackException
 import org.springframework.web.bind.annotation.*
+import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 import javax.validation.Valid
 
@@ -97,11 +98,18 @@ class GoalController {
     ): ResponseEntity<ApiContract<GoalHistoryResponse>> {
         var apiContract = ApiContract<GoalHistoryResponse>(null, null)
         try {
+            println("lopes 2")
             apiContract = handler.createGoalHistoryById(id, saveGoalHistoryRequest)
 
             return ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
+            println(error)
+            when(error) {
+                is EntityNotFoundException ->  {
+                    apiContract.error = ErrorResponse("Asd")
+                }
+                else -> apiContract.error = ErrorResponse("unexpected error")
+            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }

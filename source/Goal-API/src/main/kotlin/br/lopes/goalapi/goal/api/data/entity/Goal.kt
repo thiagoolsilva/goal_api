@@ -20,30 +20,31 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-data class Goal constructor(
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long?,
+class Goal constructor(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long = 0,
 
         @Column(name = "title")
-        var title:String,
+        var title: String,
 
         @Column(name = "description")
-        var description:String,
+        var description: String,
 
         @Column(name = "totalprice")
-        var totalPrice:Double,
+        var totalPrice: Double,
 
         @Column(name = "dtendgoal")
-        var dtEndGoal:LocalDateTime,
+        var dtEndGoal: LocalDateTime,
 
         @Column(name = "dtcreate")
-        val dtCreate:LocalDateTime,
+        val dtCreate: LocalDateTime,
 
         @Column(name = "dtupdate")
-        var dtUpdate:LocalDateTime?,
+        var dtUpdate: LocalDateTime?,
+) {
+    @OneToMany(mappedBy = "goal", cascade = [CascadeType.ALL], targetEntity = History::class, fetch = FetchType.LAZY)
+    var history: MutableList<History> = mutableListOf()
 
-        @OneToMany(mappedBy = "goal", targetEntity = History::class, fetch = FetchType.LAZY)
-        var history: List<History> = mutableListOf(),
-
-        @ManyToOne(fetch = FetchType.LAZY)
-        var user:User
-)
+    @ManyToOne(fetch = FetchType.LAZY)
+    lateinit var user: User
+}

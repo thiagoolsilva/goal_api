@@ -20,8 +20,9 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-data class User constructor(
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long?,
+class User constructor(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long = 0,
 
         @Column(name = "name")
         var name:String,

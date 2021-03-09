@@ -14,11 +14,18 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.domain.service.goal
+package br.lopes.goalapi.goal.api.domain.service.history.mapper
 
-class GoalConstants {
-     object PARAMS {
-        const val QUERY_PAGEABLE_PARAM = "pageable"
-        const val QUERY_ID_PARAM = "id"
-    }
+import br.lopes.goalapi.goal.api.controller.goal.contract.GoalHistoryResponse
+import br.lopes.goalapi.goal.api.controller.goal.contract.SaveGoalHistoryRequest
+import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
+import org.mapstruct.Mapper
+
+
+@Mapper(componentModel = "spring")
+interface HistoryServiceDataMapper {
+
+    fun saveGoalHistoryRequestToHistoryEntity(saveGoalHistoryRequest: SaveGoalHistoryRequest): HistoryEntity
+
+    fun historyEntityToGoalHistoryResponse(historyEntity: HistoryEntity) : GoalHistoryResponse
 }

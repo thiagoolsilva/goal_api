@@ -35,7 +35,9 @@ class SaveGoalUC @Autowired constructor(
         val goalDb:Goal
         if(input.id == null) {
             val userDb = userRepositoryContract.getOne(input.userId)
-            goalDb = input.toGoalDb(userDb)
+
+            goalDb = input.toGoalDb()
+            goalDb.user = userDb
 
             return goalRepositoryContract.save(goalDb)
         } else {

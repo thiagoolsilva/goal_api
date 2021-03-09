@@ -17,7 +17,7 @@
 package br.lopes.goalapi.goal.api.domain.service.goal
 
 import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toGoalEntity
-import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toHistoryEntity
+import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toGoalHistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.usecase.*
@@ -42,7 +42,7 @@ class GoalService @Autowired constructor(
 
     override fun findGoalHistoryById(params: Map<String, Any>): Page<GoalHistoryEntity> {
         val getGoalHistoryById = useCases[GetGoalHistoryById::class.toString()] as GetGoalHistoryById
-        return getGoalHistoryById.execute(params).map { it.toHistoryEntity() }
+        return getGoalHistoryById.execute(params).map { it.toGoalHistoryEntity() }
     }
 
     override fun saveGoal(goalEntity: GoalEntity): GoalEntity {

@@ -30,27 +30,26 @@ fun Goal.toGoalEntity() = GoalEntity(
         description = this.description,
         totalPrice = this.totalPrice,
         dtEndGoal = this.dtEndGoal,
-        userId = this.user.id ?: -1,
+        userId = this.user.id,
         amount =  this.history.map { it.value }.sum()
 )
 
-fun History.toHistoryEntity() = GoalHistoryEntity(
+fun History.toGoalHistoryEntity() = GoalHistoryEntity(
         goalId = this.goal.id,
         id = this.id,
         dtEvent = this.dtEvent,
         value = this.value
 )
 
-fun GoalHistoryEntity.toHistoryDb(goal:Goal) = History(
+fun History.toHistoryEntity() = HistoryEntity(
+        goalId = this.id,
         id = this.id,
         dtEvent = this.dtEvent,
-        value = this.value,
-        goal = goal
+        value = this.value
 )
 
-fun GoalEntity.toGoalDb(user: User) = Goal(
-        user = user,
-        id = this.id,
+fun GoalEntity.toGoalDb() = Goal(
+        id = this.id ?: 0,
         title = this.title,
         description = this.description,
         totalPrice = this.totalPrice,

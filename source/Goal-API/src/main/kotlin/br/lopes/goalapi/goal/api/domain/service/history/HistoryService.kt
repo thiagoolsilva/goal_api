@@ -16,12 +16,21 @@
 
 package br.lopes.goalapi.goal.api.domain.service.history
 
+import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toHistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
+import br.lopes.goalapi.goal.api.domain.service.history.usecases.SaveHistoryUC
 import org.springframework.stereotype.Service
 
 @Service
-class HistoryService : HistoryServiceContract {
-    override fun saveGoalHIstoryById(goalId: Long, historyEntity: HistoryEntity): HistoryEntity {
-        TODO("Not yet implemented")
+class HistoryService constructor(
+        private val useCases: Map<String, Any>
+): HistoryServiceContract {
+    override fun saveGoalHistoryById(historyEntity: HistoryEntity): HistoryEntity {
+        val saveHistoryUC = useCases[SaveHistoryUC::class.toString()] as SaveHistoryUC
+        val content = mapOf(
+                GoalHistoryContsants.SaveParams.GOAL_ID to historyEntity.goalId,
+                GoalHistoryContsants.SaveParams.HISTORY_CONTENT to historyEntity
+        )
+        return saveHistoryUC.execute(content).toHistoryEntity()
     }
 }

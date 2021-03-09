@@ -14,31 +14,42 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.goal.di
+package br.lopes.goalapi.goal.api.domain.service.history.di
 
-import br.lopes.goalapi.goal.api.controller.goal.Handler
 import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
-import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
+import br.lopes.goalapi.goal.api.data.repository.HistoryRepositoryContract
+import br.lopes.goalapi.goal.api.domain.service.goal.usecase.*
+import br.lopes.goalapi.goal.api.domain.service.history.HistoryService
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.mapper.HistoryServiceDataMapper
+import br.lopes.goalapi.goal.api.domain.service.history.usecases.SaveHistoryUC
+import org.mapstruct.factory.Mappers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 
 @Configuration
-class GoalPresentationModule {
+class HistoryServiceModule {
+
+//    @Autowired
+//    private lateinit var  historyRepositoryContract: HistoryRepositoryContract
 
     @Autowired
-    private lateinit var goalServiceContract:GoalServiceContract
-
-    @Autowired
-    private lateinit var historyServiceContract: HistoryServiceContract
-
-    @Autowired
-    private lateinit var historyServiceDataMapper: HistoryServiceDataMapper
+    private lateinit var goalRepositoryContract: GoalRepositoryContract
 
     @Bean
-    fun createGoalHandler(): Handler {
-        return Handler(goalServiceContract, historyServiceContract, historyServiceDataMapper)
+    @Primary
+    fun createHistoryService(): HistoryServiceContract {
+        val useCases = mapOf<String, Any>(
+                SaveHistoryUC::class.toString() to createSaveHistoryUc()
+        )
+        return HistoryService(useCases)
     }
+
+    @Bean
+    fun createSaveHistoryUc() : SaveHistoryUC {
+        return SaveHistoryUC(goalRepositoryContract)
+    }
+
 }

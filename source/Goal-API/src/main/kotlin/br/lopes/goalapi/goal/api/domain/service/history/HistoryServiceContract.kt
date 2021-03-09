@@ -19,5 +19,5 @@ package br.lopes.goalapi.goal.api.domain.service.history
 import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
 
 interface HistoryServiceContract {
-    fun saveGoalHIstoryById(goalId: Long, historyEntity: HistoryEntity) : HistoryEntity
+    fun saveGoalHistoryById(historyEntity: HistoryEntity) : HistoryEntity
 }

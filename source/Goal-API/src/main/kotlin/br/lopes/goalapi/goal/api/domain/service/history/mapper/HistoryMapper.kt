@@ -14,11 +14,13 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.domain.service.goal
+package br.lopes.goalapi.goal.api.domain.service.history.mapper
 
-class GoalConstants {
-     object PARAMS {
-        const val QUERY_PAGEABLE_PARAM = "pageable"
-        const val QUERY_ID_PARAM = "id"
-    }
-}
+import br.lopes.goalapi.goal.api.data.entity.History
+import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
+
+fun HistoryEntity.toHistory() = History(
+        id = this.id ?: 0,
+        dtEvent = this.dtEvent,
+        value = this.value
+)

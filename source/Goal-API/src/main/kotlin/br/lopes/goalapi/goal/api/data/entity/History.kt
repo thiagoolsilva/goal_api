@@ -20,15 +20,16 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-data class History constructor(
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long?,
+class History constructor(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long = 0,
 
         @Column(name = "dtevent")
-        val dtEvent:LocalDateTime,
+        val dtEvent: LocalDateTime,
 
         @Column(name = "value")
-        var value:Double,
-
-        @ManyToOne(fetch = FetchType.LAZY)
-        var goal: Goal
-)
+        var value: Double,
+) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    lateinit var goal: Goal
+}

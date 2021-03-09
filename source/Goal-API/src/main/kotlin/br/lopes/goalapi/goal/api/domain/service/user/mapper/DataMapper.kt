@@ -21,7 +21,7 @@ import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
 import java.time.LocalDateTime
 
 fun UserEntity.toUserDb() = User(
-        id = this.id,
+        id = this.id ?: 0,
         name = this.name,
         nickname = this.nickname,
         dtCreate = LocalDateTime.now(),
