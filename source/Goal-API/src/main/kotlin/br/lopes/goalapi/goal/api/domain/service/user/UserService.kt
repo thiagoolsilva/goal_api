@@ -18,22 +18,25 @@ package br.lopes.goalapi.goal.api.domain.service.user
 
 import br.lopes.goalapi.goal.api.domain.service.user.mapper.toUserEntity
 import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
-import br.lopes.goalapi.goal.api.domain.service.user.usecase.DeleteUserUC
-import br.lopes.goalapi.goal.api.domain.service.user.usecase.FindUserByIdUC
-import br.lopes.goalapi.goal.api.domain.service.user.usecase.FindUserByQueryUC
-import br.lopes.goalapi.goal.api.domain.service.user.usecase.SaveUserUC
+import br.lopes.goalapi.goal.api.domain.service.user.usecase.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService @Autowired constructor(
         private val saveUserUC: SaveUserUC,
         private val deleteUserUC: DeleteUserUC,
         private val findUserByIdUC: FindUserByIdUC,
-        private val findUserByQueryUC: FindUserByQueryUC
+        private val findUserByQueryUC: FindUserByQueryUC,
+        private val updateUserUC:UpdateUserUC
 ): UserServiceContract {
+    override fun updateUser(userEntity: UserEntity): UserEntity {
+        return updateUserUC.execute(userEntity).toUserEntity()
+    }
 
+    @Transactional
     override fun saveUser(userEntity: UserEntity): UserEntity {
         return saveUserUC.execute(userEntity).toUserEntity()
     }

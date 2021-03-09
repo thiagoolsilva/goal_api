@@ -17,13 +17,9 @@
 package br.lopes.goalapi.goal.api.domain.service.history.di
 
 import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
-import br.lopes.goalapi.goal.api.data.repository.HistoryRepositoryContract
-import br.lopes.goalapi.goal.api.domain.service.goal.usecase.*
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryService
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
-import br.lopes.goalapi.goal.api.domain.service.history.mapper.HistoryServiceDataMapper
 import br.lopes.goalapi.goal.api.domain.service.history.usecases.SaveHistoryUC
-import org.mapstruct.factory.Mappers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

@@ -16,9 +16,9 @@
 
 package br.lopes.goalapi.goal.api.controller.goal
 
-import br.lopes.goalapi.goal.api.controller.Constants
+import br.lopes.goalapi.goal.api.controller.ApiConstants
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
-import br.lopes.goalapi.goal.api.controller.contract.ErrorResponse
+import br.lopes.goalapi.goal.api.controller.contract.ErrorResponseMessage
 import br.lopes.goalapi.goal.api.controller.goal.contract.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
@@ -34,7 +34,7 @@ import javax.transaction.Transactional
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(Constants.Goal.GOAL_PATH)
+@RequestMapping(ApiConstants.Goal.GOAL_PATH)
 class GoalController {
 
     @Autowired
@@ -50,7 +50,7 @@ class GoalController {
 
             return ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
+            apiContract.errorMessage = ErrorResponseMessage("unexpected error")
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
@@ -66,7 +66,7 @@ class GoalController {
 
             return ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
+            apiContract.errorMessage = ErrorResponseMessage("unexpected error")
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
@@ -82,10 +82,10 @@ class GoalController {
 
             return ResponseEntity.ok(apiContract)
         } catch (constraintException: DataIntegrityViolationException) {
-            apiContract.error = ErrorResponse("Invalid provided user")
+            apiContract.errorMessage = ErrorResponseMessage("Invalid provided user")
             return ResponseEntity.badRequest().body(apiContract)
         } catch (error:Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
+            apiContract.errorMessage = ErrorResponseMessage("unexpected error")
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
@@ -98,17 +98,13 @@ class GoalController {
     ): ResponseEntity<ApiContract<GoalHistoryResponse>> {
         var apiContract = ApiContract<GoalHistoryResponse>(null, null)
         try {
-            println("lopes 2")
             apiContract = handler.createGoalHistoryById(id, saveGoalHistoryRequest)
 
             return ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
-            println(error)
             when(error) {
-                is EntityNotFoundException ->  {
-                    apiContract.error = ErrorResponse("Asd")
-                }
-                else -> apiContract.error = ErrorResponse("unexpected error")
+                is EntityNotFoundException ->  apiContract.errorMessage = ErrorResponseMessage("")
+                else -> apiContract.errorMessage = ErrorResponseMessage("unexpected error")
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
@@ -125,10 +121,10 @@ class GoalController {
 
             return ResponseEntity.ok(apiContract)
         } catch (constraintException: DataIntegrityViolationException) {
-            apiContract.error = ErrorResponse("Invalid provided user")
+            apiContract.errorMessage = ErrorResponseMessage("Invalid provided user")
             return ResponseEntity.badRequest().body(apiContract)
         } catch (error:Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
+            apiContract.errorMessage = ErrorResponseMessage("unexpected error")
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }

@@ -16,7 +16,6 @@
 
 package br.lopes.goalapi.goal.api.controller.contract
 
-data class ApiContract<T> constructor(
-        var body: T?,
-        var  errorMessage: ErrorResponseMessage?
+class ErrorResponseMessage constructor(
+        val message:String
 )

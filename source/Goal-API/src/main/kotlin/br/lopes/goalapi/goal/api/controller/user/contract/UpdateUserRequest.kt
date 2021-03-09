@@ -14,18 +14,16 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.domain.service.history.mapper
+package br.lopes.goalapi.goal.api.controller.user.contract
 
-import br.lopes.goalapi.goal.api.controller.goal.contract.GoalHistoryResponse
-import br.lopes.goalapi.goal.api.controller.goal.contract.SaveGoalHistoryRequest
-import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
-import org.mapstruct.Mapper
+import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.PositiveOrZero
 
-
-@Mapper(componentModel = "spring")
-interface HistoryServiceDataMapper {
-
-    fun saveGoalHistoryRequestToHistoryEntity(saveGoalHistoryRequest: SaveGoalHistoryRequest): HistoryEntity
-
-    fun historyEntityToGoalHistoryResponse(historyEntity: HistoryEntity) : GoalHistoryResponse
+data class UpdateUserRequest constructor(
+    @field:PositiveOrZero
+    var id:Long = 0,
+    @field:NotEmpty
+    var name:String = "",
+    @field:NotEmpty
+    var nickname:String = ""){
 }

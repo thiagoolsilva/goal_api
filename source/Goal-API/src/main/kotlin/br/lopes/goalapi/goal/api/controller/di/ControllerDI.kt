@@ -14,8 +14,20 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.contract
+package br.lopes.goalapi.goal.api.controller.di
 
-class ErrorResponse constructor(
-        val message:String
-)
+import mu.KLogger
+import mu.KotlinLogging
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
+
+@Configuration
+class ControllerDI {
+
+    @Bean
+    @Primary
+    fun createLoggerDI(): KLogger {
+        return KotlinLogging.logger {}
+    }
+}

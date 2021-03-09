@@ -16,7 +16,12 @@
 
 package br.lopes.goalapi.goal.api.controller.user.contract
 
-class UserRequest constructor(
-        val id:Long?,
-        val name:String,
-        val nickname:String)
+import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.Null
+
+data class UserRequest constructor(
+        var id:Long?,
+        @field:NotEmpty
+        var name:String = "",
+        @field:NotEmpty
+        var nickname:String = "")

@@ -14,9 +14,10 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.contract
+package br.lopes.goalapi.goal.api.controller
 
-data class ApiContract<T> constructor(
-        var body: T?,
-        var  errorMessage: ErrorResponseMessage?
-)
+class ErrorConstants {
+    companion object ApiError {
+        const val GENERIC_ERROR_MESSAGE = "unexpected error"
+    }
+}

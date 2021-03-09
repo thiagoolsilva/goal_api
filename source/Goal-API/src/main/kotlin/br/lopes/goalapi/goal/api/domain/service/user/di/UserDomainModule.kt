@@ -17,10 +17,7 @@
 package br.lopes.goalapi.goal.api.domain.service.user.di
 
 import br.lopes.goalapi.goal.api.data.repository.UserRepositoryContract
-import br.lopes.goalapi.goal.api.domain.service.user.usecase.DeleteUserUC
-import br.lopes.goalapi.goal.api.domain.service.user.usecase.FindUserByIdUC
-import br.lopes.goalapi.goal.api.domain.service.user.usecase.FindUserByQueryUC
-import br.lopes.goalapi.goal.api.domain.service.user.usecase.SaveUserUC
+import br.lopes.goalapi.goal.api.domain.service.user.usecase.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -49,5 +46,10 @@ class UserDomainModule {
     @Bean
     fun creteUserByQueryUseCase(): FindUserByQueryUC {
         return FindUserByQueryUC(userRepositoryContract)
+    }
+
+    @Bean
+    fun createUpdateUserUseCase() : UpdateUserUC {
+        return UpdateUserUC(userRepositoryContract)
     }
 }

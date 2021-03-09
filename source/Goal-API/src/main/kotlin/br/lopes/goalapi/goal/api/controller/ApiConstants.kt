@@ -16,7 +16,7 @@
 
 package br.lopes.goalapi.goal.api.controller
 
-class Constants {
+class ApiConstants {
     object User {
         const val USER_PATH = "/user"
     }
@@ -24,4 +24,6 @@ class Constants {
     object Goal {
         const val GOAL_PATH = "/goal"
     }
+
+
 }

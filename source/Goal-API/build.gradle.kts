@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
 	id("org.springframework.boot") version "2.4.2"
@@ -8,7 +7,6 @@ plugins {
 	kotlin("plugin.spring") version "1.4.21"
 	kotlin("plugin.jpa") version "1.4.21"
 	kotlin("plugin.allopen") version "1.3.61"
-	kotlin("kapt") version "1.3.61"
 }
 
 allOpen {
@@ -38,16 +36,9 @@ dependencies {
 	// serialize and deserialize class in kotlin
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-	// build dependencies
-	implementation("org.mapstruct:mapstruct:1.4.2.Final")
-	kapt("org.mapstruct:mapstruct-processor:1.4.2.Final")
+	// logging
+	implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
 
-	// mapper
-	implementation ("org.mapstruct:mapstruct:1.4.2.Final")
-	annotationProcessor ("org.mapstruct:mapstruct-processor:1.4.2.Final")
-
-//	implementation( "org.mapstruct:mapstruct:1.4.2.Final")
-//	annotationProcessor( "org.mapstruct:mapstruct-processor:1.4.2.Final")
 
 	// dev dependencies
 	developmentOnly("org.springframework.boot:spring-boot-devtools")

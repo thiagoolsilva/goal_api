@@ -20,6 +20,7 @@ import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
 import org.springframework.data.domain.Page
 
 interface UserServiceContract {
+    fun updateUser(userEntity: UserEntity):UserEntity
     fun saveUser(userEntity: UserEntity):UserEntity
     fun deleteUser(userId:Long)
     fun getUserById(userId:Long): UserEntity

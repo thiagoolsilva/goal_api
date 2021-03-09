@@ -57,11 +57,3 @@ fun GoalEntity.toGoalDb() = Goal(
         dtCreate = LocalDateTime.now(),
         dtUpdate = LocalDateTime.now()
 )
-
-fun HistoryEntity.toGoalHistory() = GoalHistoryEntity(
-        goalId = this.goalId,
-        id = this.id,
-        dtEvent = this.dtEvent,
-        value = this.value
-)
-

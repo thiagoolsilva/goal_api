@@ -16,100 +16,136 @@
 
 package br.lopes.goalapi.goal.api.controller.user
 
-import br.lopes.goalapi.goal.api.controller.Constants
+import br.lopes.goalapi.goal.api.controller.ApiConstants
+import br.lopes.goalapi.goal.api.controller.ErrorConstants.ApiError.GENERIC_ERROR_MESSAGE
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
-import br.lopes.goalapi.goal.api.controller.contract.ErrorResponse
+import br.lopes.goalapi.goal.api.controller.contract.ErrorResponseMessage
+import br.lopes.goalapi.goal.api.controller.printError
+import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessge.INVALID_USER_ENTITY
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessge.USER_NOT_FOUND
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessge.USER_NOT_UPDATED
+import br.lopes.goalapi.goal.api.controller.user.error.model.UserInputNotValid
+import br.lopes.goalapi.goal.api.controller.user.error.model.UserNotFound
+import mu.KLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
-import javax.transaction.Transactional
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(Constants.User.USER_PATH)
+@RequestMapping(ApiConstants.User.USER_PATH)
 class UserController {
 
     @Autowired
     private lateinit var handler: Handler
 
+    @Autowired
+    private lateinit var logger: KLogger
+
     @PostMapping
     @Transactional
     fun saveUser(
-            @RequestBody @Valid userRequest: UserRequest,
-//            bindingResult: BindingResult,
-            uriComponentsBuilder: UriComponentsBuilder
+        @Valid @RequestBody userRequest: UserRequest,
+        bindingResult: BindingResult,
+        uriComponentsBuilder: UriComponentsBuilder,
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
         var apiContract = ApiContract<UserResponseDetails>(null, null)
-        try {
-            apiContract = handler.createOrUpdateUser(userRequest)
+        return try {
+            apiContract = handler.createOrUpdateUser(userRequest, bindingResult)
             val userId = apiContract.body?.id
-            val uri = uriComponentsBuilder.path(Constants.User.USER_PATH + "/{id}").buildAndExpand(userId).toUri()
+            val uri = uriComponentsBuilder.path(ApiConstants.User.USER_PATH + "/{id}").buildAndExpand(userId).toUri()
 
-            return ResponseEntity.created(uri).body(apiContract)
+            ResponseEntity.created(uri).body(apiContract)
         } catch (error: Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+            error.printError(logger)
+
+            when (error) {
+                is UserInputNotValid -> apiContract.errorMessage = ErrorResponseMessage(error.message ?: "")
+                else -> apiContract.errorMessage = ErrorResponseMessage("unexpected error")
+            }
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
 
     @PutMapping
-    @Transactional
     fun updateUser(
-            @RequestBody @Valid userRequest: UserRequest
+        @Valid @RequestBody userRequest: UpdateUserRequest,
+        bindingResult: BindingResult
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
         var apiContract = ApiContract<UserResponseDetails>(null, null)
-        try {
-            if (userRequest.id != null) {
-                apiContract = handler.updateUser(userRequest)
+        return try {
+            apiContract = handler.updateUser(userRequest, bindingResult)
 
-                return ResponseEntity.ok(apiContract)
-            } else {
-                apiContract.error = ErrorResponse("Invalid user id")
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiContract)
-            }
+            ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+            error.printError(logger)
+
+            when (error) {
+                is UserNotFound -> {
+                    apiContract.errorMessage = ErrorResponseMessage(USER_NOT_UPDATED.second)
+                    ResponseEntity.status(USER_NOT_UPDATED.first).body(apiContract)
+                }
+                is UserInputNotValid -> {
+                    apiContract.errorMessage = ErrorResponseMessage(INVALID_USER_ENTITY.second)
+                    ResponseEntity.status(INVALID_USER_ENTITY.first).body(apiContract)
+                }
+                else -> {
+                    apiContract.errorMessage = ErrorResponseMessage(GENERIC_ERROR_MESSAGE)
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+                }
+            }
         }
     }
 
     @GetMapping("/{id}")
     fun getUserById(
-            @PathVariable id: Long
+        @PathVariable id: Long,
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
         var apiContract = ApiContract<UserResponseDetails>(null, null)
-        try {
+        return try {
             apiContract = handler.getUserById(id)
 
-            return ResponseEntity.ok(apiContract)
-        } catch (EntityNotFoundException: Exception) {
-            apiContract.error = ErrorResponse("User not found")
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiContract)
+            ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            error.printError(logger)
+
+            when (error) {
+                is UserNotFound -> {
+                    apiContract.errorMessage = ErrorResponseMessage(USER_NOT_FOUND.second)
+                    ResponseEntity.status(USER_NOT_FOUND.first).body(apiContract)
+                }
+                else -> {
+                    apiContract.errorMessage = ErrorResponseMessage(GENERIC_ERROR_MESSAGE)
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+                }
+            }
         }
     }
 
     @GetMapping
     fun getUsers(
-            @RequestParam(required = false) nickname:String?,
-            @Valid pageable: Pageable
+        @RequestParam(required = false) nickname: String?,
+        @Valid pageable: Pageable,
     ): ResponseEntity<ApiContract<Page<UserResponseDetails>>> {
         var apiContract = ApiContract<Page<UserResponseDetails>>(null, null)
-        try {
+        return try {
             apiContract = handler.getUserByQuery(nickname, pageable)
 
-            return ResponseEntity.ok().body(apiContract)
+            ResponseEntity.ok().body(apiContract)
         } catch (error: Exception) {
-            apiContract.error = ErrorResponse("unexpected error")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            error.printError(logger)
+
+            apiContract.errorMessage = ErrorResponseMessage(GENERIC_ERROR_MESSAGE)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
 }

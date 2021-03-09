@@ -17,10 +17,8 @@
 package br.lopes.goalapi.goal.api.controller.goal.di
 
 import br.lopes.goalapi.goal.api.controller.goal.Handler
-import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
-import br.lopes.goalapi.goal.api.domain.service.history.mapper.HistoryServiceDataMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -34,11 +32,8 @@ class GoalPresentationModule {
     @Autowired
     private lateinit var historyServiceContract: HistoryServiceContract
 
-    @Autowired
-    private lateinit var historyServiceDataMapper: HistoryServiceDataMapper
-
     @Bean
     fun createGoalHandler(): Handler {
-        return Handler(goalServiceContract, historyServiceContract, historyServiceDataMapper)
+        return Handler(goalServiceContract, historyServiceContract)
     }
 }

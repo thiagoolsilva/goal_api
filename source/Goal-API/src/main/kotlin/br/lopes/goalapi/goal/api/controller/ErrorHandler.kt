@@ -14,9 +14,19 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.contract
+package br.lopes.goalapi.goal.api.controller
 
-data class ApiContract<T> constructor(
-        var body: T?,
-        var  errorMessage: ErrorResponseMessage?
-)
+import mu.KLogger
+import org.springframework.validation.BindingResult
+
+fun handleUserInputErrors(bindingResult: BindingResult):String {
+
+    return bindingResult.allErrors
+            .map { it.toString() }
+            .reduce { acc, error -> acc + error}
+}
+
+fun Exception.printError(logger:KLogger) = run {
+    logger.error { this }
+    logger.error { this.printStackTrace() }
+}

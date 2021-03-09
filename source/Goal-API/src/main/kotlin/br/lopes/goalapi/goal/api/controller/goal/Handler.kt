@@ -24,14 +24,14 @@ import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalResponse
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalConstants
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
-import br.lopes.goalapi.goal.api.domain.service.history.mapper.HistoryServiceDataMapper
+import br.lopes.goalapi.goal.api.domain.service.history.mapper.toGoalHistoryResponse
+import br.lopes.goalapi.goal.api.domain.service.history.mapper.toHistoryEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 class Handler constructor(
        private val goalServiceContract: GoalServiceContract,
-       private val historyService: HistoryServiceContract,
-       private val historyServiceDataMapper: HistoryServiceDataMapper
+       private val historyService: HistoryServiceContract
 ) {
     fun getGoalById(id: Long): ApiContract<GoalResponse> {
         val response = ApiContract<GoalResponse>(null, null)
@@ -53,12 +53,12 @@ class Handler constructor(
     fun createGoalHistoryById(id: Long, history: SaveGoalHistoryRequest) : ApiContract<GoalHistoryResponse> {
         val apiContract = ApiContract<GoalHistoryResponse>(null, null)
 
-        val historyEntity = historyServiceDataMapper.saveGoalHistoryRequestToHistoryEntity(history)
+        val historyEntity = history.toHistoryEntity()
         historyEntity.goalId = id
 
         val body = historyService.saveGoalHistoryById(historyEntity)
 
-        apiContract.body = historyServiceDataMapper.historyEntityToGoalHistoryResponse(body)
+        apiContract.body = body.toGoalHistoryResponse()
 
         return apiContract
     }

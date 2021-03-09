@@ -14,9 +14,9 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.contract
+package br.lopes.goalapi.goal.api.controller.user.error.model
 
-data class ApiContract<T> constructor(
-        var body: T?,
-        var  errorMessage: ErrorResponseMessage?
-)
+import java.lang.Exception
+import java.lang.RuntimeException
+
+class UserInputNotValid constructor(message:String, error: Exception = RuntimeException(message)): RuntimeException(message, error)

@@ -17,15 +17,23 @@
 package br.lopes.goalapi.goal.api.controller.user
 
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
+import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
+import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessge.USER_NOT_FOUND
+import br.lopes.goalapi.goal.api.controller.user.error.model.UserInputNotValid
+import br.lopes.goalapi.goal.api.controller.user.error.model.UserNotFound
 import br.lopes.goalapi.goal.api.controller.user.mapper.toUserEntity
 import br.lopes.goalapi.goal.api.controller.user.mapper.toUserResponse
 import br.lopes.goalapi.goal.api.domain.service.user.UserServiceConstants
 import br.lopes.goalapi.goal.api.domain.service.user.UserServiceContract
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.validation.BindingResult
+import javax.persistence.EntityNotFoundException
 
 
 class Handler @Autowired constructor(
@@ -33,12 +41,16 @@ class Handler @Autowired constructor(
 ){
 
     fun getUserById(userId:Long): ApiContract<UserResponseDetails> {
-        val response = ApiContract<UserResponseDetails>(null, null)
+        return try {
+            val response = ApiContract<UserResponseDetails>(null, null)
 
-        val findUser = userService.getUserById(userId).toUserResponse()
-        response.body = findUser
+            val findUser = userService.getUserById(userId).toUserResponse()
+            response.body = findUser
 
-        return response
+             response
+        } catch (entityNotFoundException: EntityNotFoundException) {
+            throw UserNotFound(USER_NOT_FOUND.second, entityNotFoundException)
+        }
     }
 
     fun getUserByQuery(nickname: String?, pageable: Pageable): ApiContract<Page<UserResponseDetails>> {
@@ -56,7 +68,11 @@ class Handler @Autowired constructor(
         return apiContract
     }
 
-    fun createOrUpdateUser(userRequest: UserRequest): ApiContract<UserResponseDetails> {
+    fun createOrUpdateUser(userRequest: UserRequest, bindingResult: BindingResult): ApiContract<UserResponseDetails> {
+        if(bindingResult.hasErrors()) {
+            throw UserInputNotValid(handleUserInputErrors(bindingResult))
+        }
+
         val response = ApiContract<UserResponseDetails>(null, null)
 
         val userEntity = userRequest.toUserEntity()
@@ -66,14 +82,21 @@ class Handler @Autowired constructor(
         return response
     }
 
-    fun updateUser(userRequest: UserRequest): ApiContract<UserResponseDetails> {
-        val apiContract = ApiContract<UserResponseDetails>(null, null)
+    fun updateUser(updateUserRequest: UpdateUserRequest, bindingResult: BindingResult): ApiContract<UserResponseDetails> {
+        return try {
+            if(bindingResult.hasErrors()) {
+                throw UserInputNotValid(handleUserInputErrors(bindingResult))
+            }
 
-        val userEntity = userRequest.toUserEntity()
-        val response = userService.saveUser(userEntity).toUserResponse()
-        apiContract.body = response
+            val apiContract = ApiContract<UserResponseDetails>(null, null)
 
-        return apiContract
+            val userEntity = updateUserRequest.toUserEntity()
+            val response = userService.updateUser(userEntity).toUserResponse()
+            apiContract.body = response
+
+            apiContract
+        } catch(dataIntegrityViolationException: DataIntegrityViolationException) {
+            throw UserNotFound("Id not found", dataIntegrityViolationException)
+        }
     }
-
 }

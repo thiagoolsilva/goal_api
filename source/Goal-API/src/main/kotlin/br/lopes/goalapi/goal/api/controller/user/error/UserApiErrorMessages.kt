@@ -14,9 +14,15 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.contract
+package br.lopes.goalapi.goal.api.controller.user.error
 
-data class ApiContract<T> constructor(
-        var body: T?,
-        var  errorMessage: ErrorResponseMessage?
-)
+import org.springframework.http.HttpStatus
+
+class UserApiErrorMessages {
+
+    companion object ErrorMessge {
+         val USER_NOT_FOUND = Pair(HttpStatus.NO_CONTENT, "User not found")
+         val USER_NOT_UPDATED = Pair(HttpStatus.FORBIDDEN, "user not authorized to update the provided id")
+         val INVALID_USER_ENTITY = Pair(HttpStatus.BAD_REQUEST, "invalid provided User entity")
+    }
+}
