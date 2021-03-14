@@ -32,6 +32,7 @@ class UserService @Autowired constructor(
         private val findUserByQueryUC: FindUserByQueryUC,
         private val updateUserUC:UpdateUserUC
 ): UserServiceContract {
+    @Transactional
     override fun updateUser(userEntity: UserEntity): UserEntity {
         return updateUserUC.execute(userEntity).toUserEntity()
     }

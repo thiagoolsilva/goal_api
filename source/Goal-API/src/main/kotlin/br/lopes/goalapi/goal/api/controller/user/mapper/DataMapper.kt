@@ -22,7 +22,7 @@ import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
 import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
 
 fun UserRequest.toUserEntity() = UserEntity(
-        id = this.id,
+        id = null,
         name = this.name,
         nickname = this.nickname
 )

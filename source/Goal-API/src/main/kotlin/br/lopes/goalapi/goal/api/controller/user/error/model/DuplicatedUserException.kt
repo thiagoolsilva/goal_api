@@ -14,12 +14,9 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.user.contract
+package br.lopes.goalapi.goal.api.controller.user.error.model
 
-import javax.validation.constraints.NotEmpty
+import java.lang.Exception
+import java.lang.RuntimeException
 
-data class UserRequest constructor(
-        @field:NotEmpty
-        var name:String = "",
-        @field:NotEmpty
-        var nickname:String = "")
+class DuplicatedUserException constructor(message:String, error: Exception = RuntimeException(message)): RuntimeException(message, error)

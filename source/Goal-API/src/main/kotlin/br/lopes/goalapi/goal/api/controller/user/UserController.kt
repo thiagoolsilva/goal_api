@@ -24,9 +24,11 @@ import br.lopes.goalapi.goal.api.controller.printError
 import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessge.INVALID_USER_ENTITY
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessge.USER_NOT_FOUND
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessge.USER_NOT_UPDATED
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.DUPLICATED_USER_ENTITY
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.INVALID_USER_ENTITY
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.USER_NOT_FOUND
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.USER_NOT_UPDATED
+import br.lopes.goalapi.goal.api.controller.user.error.model.DuplicatedUserException
 import br.lopes.goalapi.goal.api.controller.user.error.model.UserInputNotValid
 import br.lopes.goalapi.goal.api.controller.user.error.model.UserNotFound
 import mu.KLogger
@@ -35,7 +37,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
@@ -52,7 +53,6 @@ class UserController {
     private lateinit var logger: KLogger
 
     @PostMapping
-    @Transactional
     fun saveUser(
         @Valid @RequestBody userRequest: UserRequest,
         bindingResult: BindingResult,
@@ -60,7 +60,7 @@ class UserController {
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
         var apiContract = ApiContract<UserResponseDetails>(null, null)
         return try {
-            apiContract = handler.createOrUpdateUser(userRequest, bindingResult)
+            apiContract = handler.saveUser(userRequest, bindingResult)
             val userId = apiContract.body?.id
             val uri = uriComponentsBuilder.path(ApiConstants.User.USER_PATH + "/{id}").buildAndExpand(userId).toUri()
 
@@ -69,10 +69,19 @@ class UserController {
             error.printError(logger)
 
             when (error) {
-                is UserInputNotValid -> apiContract.errorMessage = ErrorResponseMessage(error.message ?: "")
-                else -> apiContract.errorMessage = ErrorResponseMessage("unexpected error")
+                is UserInputNotValid -> {
+                    apiContract.errorMessage = ErrorResponseMessage(INVALID_USER_ENTITY.second)
+                    ResponseEntity.status(INVALID_USER_ENTITY.first).body(apiContract)
+                }
+                is DuplicatedUserException -> {
+                    apiContract.errorMessage = ErrorResponseMessage(DUPLICATED_USER_ENTITY.second)
+                    ResponseEntity.status(DUPLICATED_USER_ENTITY.first).body(apiContract)
+                }
+                else -> {
+                    apiContract.errorMessage = ErrorResponseMessage(GENERIC_ERROR_MESSAGE)
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+                }
             }
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
 

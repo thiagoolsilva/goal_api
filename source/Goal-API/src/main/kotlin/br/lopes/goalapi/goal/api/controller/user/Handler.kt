@@ -21,7 +21,8 @@ import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
 import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessge.USER_NOT_FOUND
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.USER_NOT_FOUND
+import br.lopes.goalapi.goal.api.controller.user.error.model.DuplicatedUserException
 import br.lopes.goalapi.goal.api.controller.user.error.model.UserInputNotValid
 import br.lopes.goalapi.goal.api.controller.user.error.model.UserNotFound
 import br.lopes.goalapi.goal.api.controller.user.mapper.toUserEntity
@@ -68,18 +69,22 @@ class Handler @Autowired constructor(
         return apiContract
     }
 
-    fun createOrUpdateUser(userRequest: UserRequest, bindingResult: BindingResult): ApiContract<UserResponseDetails> {
+    fun saveUser(userRequest: UserRequest, bindingResult: BindingResult): ApiContract<UserResponseDetails> {
         if(bindingResult.hasErrors()) {
             throw UserInputNotValid(handleUserInputErrors(bindingResult))
         }
 
-        val response = ApiContract<UserResponseDetails>(null, null)
+        return try {
+            val response = ApiContract<UserResponseDetails>(null, null)
 
-        val userEntity = userRequest.toUserEntity()
-        val savedUser =  userService.saveUser(userEntity).toUserResponse()
-        response.body = savedUser
+            val userEntity = userRequest.toUserEntity()
+            val savedUser =  userService.saveUser(userEntity).toUserResponse()
+            response.body = savedUser
 
-        return response
+            response
+        } catch(duplicatedUserException: DataIntegrityViolationException) {
+            throw DuplicatedUserException("duplicated user", duplicatedUserException)
+        }
     }
 
     fun updateUser(updateUserRequest: UpdateUserRequest, bindingResult: BindingResult): ApiContract<UserResponseDetails> {
