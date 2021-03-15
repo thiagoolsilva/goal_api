@@ -18,9 +18,12 @@ package br.lopes.goalapi.goal.api.controller.goal
 
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.goal.contract.*
+import br.lopes.goalapi.goal.api.controller.goal.error.model.InvalidGoalInputException
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalResponse
+import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
+import br.lopes.goalapi.goal.api.controller.user.error.model.UserInputNotValid
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalConstants
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
@@ -28,6 +31,7 @@ import br.lopes.goalapi.goal.api.domain.service.history.mapper.toGoalHistoryResp
 import br.lopes.goalapi.goal.api.domain.service.history.mapper.toHistoryEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.validation.BindingResult
 
 class Handler constructor(
        private val goalServiceContract: GoalServiceContract,
@@ -63,7 +67,11 @@ class Handler constructor(
         return apiContract
     }
 
-    fun saveGoal(saveGoalRequest: SaveGoalRequest): ApiContract<GoalResponse> {
+    fun saveGoal(saveGoalRequest: SaveGoalRequest, bindingResult: BindingResult): ApiContract<GoalResponse> {
+        if(bindingResult.hasErrors()) {
+            throw InvalidGoalInputException(handleUserInputErrors(bindingResult))
+        }
+
         val apiContract = ApiContract<GoalResponse>(null, null)
 
         val goalEntity = saveGoalRequest.toGoalEntity()

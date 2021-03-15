@@ -22,6 +22,8 @@ import br.lopes.goalapi.goal.api.controller.goal.contract.SaveGoalRequest
 import br.lopes.goalapi.goal.api.controller.goal.contract.UpdateGoalRequest
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 fun GoalEntity.toGoalResponse() = GoalResponse(
         id = this.id ?: 0,
@@ -41,8 +43,8 @@ fun SaveGoalRequest.toGoalEntity() = GoalEntity(
         title = this.title,
         description = this.description,
         totalPrice = this.totalPrice,
-        dtEndGoal = this.dtEndGoal,
-        id = this.id,
+        dtEndGoal = LocalDateTime.parse(this.dtEndGoal),
+        id = null,
         userId = this.userId,
         amount = 0.0
 )

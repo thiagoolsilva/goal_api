@@ -14,15 +14,9 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.user.error
+package br.lopes.goalapi.goal.api.controller.goal.error.model
 
-import org.springframework.http.HttpStatus
+import java.lang.Exception
+import java.lang.RuntimeException
 
-class UserApiErrorMessages {
-    companion object ErrorMessage {
-         val USER_NOT_FOUND = Pair(HttpStatus.NO_CONTENT, "User not found.")
-         val USER_NOT_UPDATED = Pair(HttpStatus.FORBIDDEN, "User not authorized to update the provided id.")
-         val INVALID_USER_ENTITY = Pair(HttpStatus.BAD_REQUEST, "Invalid provided User entity.")
-         val DUPLICATED_USER_ENTITY = Pair(HttpStatus.FORBIDDEN, "The provided user information already exists in database.")
-    }
-}
+class InvalidGoalInputException constructor(message:String, error: Exception = RuntimeException(message)): RuntimeException(message, error)

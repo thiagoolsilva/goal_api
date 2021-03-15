@@ -24,6 +24,7 @@ import br.lopes.goalapi.goal.api.domain.service.goal.usecase.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 @Service
 class GoalService @Autowired constructor(
@@ -45,6 +46,7 @@ class GoalService @Autowired constructor(
         return getGoalHistoryById.execute(params).map { it.toGoalHistoryEntity() }
     }
 
+    @Transactional
     override fun saveGoal(goalEntity: GoalEntity): GoalEntity {
         val saveGoalUC = useCases[SaveGoalUC::class.toString()] as SaveGoalUC
         return saveGoalUC.execute(goalEntity).toGoalEntity()

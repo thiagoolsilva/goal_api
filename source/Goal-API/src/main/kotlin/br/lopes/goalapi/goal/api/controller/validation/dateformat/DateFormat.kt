@@ -14,15 +14,18 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.user.error
+package br.lopes.goalapi.goal.api.controller.validation.dateformat
 
-import org.springframework.http.HttpStatus
+import javax.validation.Constraint
+import javax.validation.Payload
+import kotlin.reflect.KClass
 
-class UserApiErrorMessages {
-    companion object ErrorMessage {
-         val USER_NOT_FOUND = Pair(HttpStatus.NO_CONTENT, "User not found.")
-         val USER_NOT_UPDATED = Pair(HttpStatus.FORBIDDEN, "User not authorized to update the provided id.")
-         val INVALID_USER_ENTITY = Pair(HttpStatus.BAD_REQUEST, "Invalid provided User entity.")
-         val DUPLICATED_USER_ENTITY = Pair(HttpStatus.FORBIDDEN, "The provided user information already exists in database.")
-    }
-}
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+@Constraint(validatedBy = [DateFormatImpl::class])
+@MustBeDocumented
+annotation class DateFormat (
+    val message: String = "Please, insert a valid datetime that contains the pattern yyyy-mm-DDThh:mm:ss",
+    val groups: Array<KClass<Any>> = [],
+    val payload: Array<KClass<Payload>> = [],
+)

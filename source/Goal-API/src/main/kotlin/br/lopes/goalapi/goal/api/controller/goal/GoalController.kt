@@ -17,9 +17,14 @@
 package br.lopes.goalapi.goal.api.controller.goal
 
 import br.lopes.goalapi.goal.api.controller.ApiConstants
+import br.lopes.goalapi.goal.api.controller.ErrorConstants
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.contract.ErrorResponseMessage
 import br.lopes.goalapi.goal.api.controller.goal.contract.*
+import br.lopes.goalapi.goal.api.controller.goal.error.GoalApiErrorMessages.ErrorMessage.INVALID_GOAL_ENTITY
+import br.lopes.goalapi.goal.api.controller.goal.error.model.InvalidGoalInputException
+import br.lopes.goalapi.goal.api.controller.printError
+import mu.KLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.dao.EmptyResultDataAccessException
@@ -28,7 +33,9 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.UnexpectedRollbackException
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.util.UriComponentsBuilder
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 import javax.validation.Valid
@@ -39,6 +46,9 @@ class GoalController {
 
     @Autowired
     private lateinit var handler: Handler
+
+    @Autowired
+    private lateinit var logger: KLogger
 
     @GetMapping("/{id}")
     fun getGoalById(
@@ -72,13 +82,43 @@ class GoalController {
     }
 
     @PostMapping
-    @Transactional
     fun saveGoal(
-        @RequestBody @Valid saveGoalRequest: SaveGoalRequest
+        @RequestBody @Valid saveGoalRequest: SaveGoalRequest,
+        bindingResult: BindingResult,
+        uriComponentsBuilder: UriComponentsBuilder
+    ): ResponseEntity<ApiContract<GoalResponse>> {
+        var apiContract = ApiContract<GoalResponse>(null, null)
+        return try {
+            apiContract = handler.saveGoal(saveGoalRequest, bindingResult)
+
+            val goalID = apiContract.body?.id
+            val uri = uriComponentsBuilder.path(ApiConstants.Goal.GOAL_PATH + "/{id}").buildAndExpand(goalID).toUri()
+
+            ResponseEntity.created(uri).body(apiContract)
+        } catch (error:Exception) {
+            error.printError(logger)
+
+            when(error) {
+                is InvalidGoalInputException -> {
+                    apiContract.errorMessage = ErrorResponseMessage(INVALID_GOAL_ENTITY.second)
+                    ResponseEntity.status(INVALID_GOAL_ENTITY.first).body(apiContract)
+                }
+                else -> {
+                    apiContract.errorMessage = ErrorResponseMessage(ErrorConstants.GENERIC_ERROR_MESSAGE)
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+                }
+            }
+        }
+    }
+
+    @PutMapping
+    @Transactional
+    fun updateGoal(
+        @RequestBody @Valid updateGoalRequest: UpdateGoalRequest
     ): ResponseEntity<ApiContract<GoalResponse>> {
         var apiContract = ApiContract<GoalResponse>(null, null)
         try {
-            apiContract = handler.saveGoal(saveGoalRequest)
+            apiContract = handler.updateGoal(updateGoalRequest)
 
             return ResponseEntity.ok(apiContract)
         } catch (constraintException: DataIntegrityViolationException) {
@@ -110,25 +150,6 @@ class GoalController {
         }
     }
 
-    @PutMapping
-    @Transactional
-    fun updateGoal(
-            @RequestBody @Valid updateGoalRequest: UpdateGoalRequest
-    ): ResponseEntity<ApiContract<GoalResponse>> {
-        var apiContract = ApiContract<GoalResponse>(null, null)
-        try {
-            apiContract = handler.updateGoal(updateGoalRequest)
-
-            return ResponseEntity.ok(apiContract)
-        } catch (constraintException: DataIntegrityViolationException) {
-            apiContract.errorMessage = ErrorResponseMessage("Invalid provided user")
-            return ResponseEntity.badRequest().body(apiContract)
-        } catch (error:Exception) {
-            apiContract.errorMessage = ErrorResponseMessage("unexpected error")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
-        }
-    }
-
     @DeleteMapping("/{id}")
     @Transactional
     fun deleteGoal(@PathVariable id: Long) :ResponseEntity<Unit> {
@@ -136,6 +157,8 @@ class GoalController {
             handler.deleteGoalById(id)
             return ResponseEntity.ok().build()
         } catch (error: Exception) {
+            error.printError(logger)
+
             return when(error) {
                 is UnexpectedRollbackException,
                 is EmptyResultDataAccessException -> ResponseEntity.notFound().build()

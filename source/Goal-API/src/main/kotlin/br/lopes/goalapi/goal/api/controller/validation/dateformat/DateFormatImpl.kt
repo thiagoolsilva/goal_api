@@ -14,15 +14,22 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.user.error
+package br.lopes.goalapi.goal.api.controller.validation.dateformat
 
-import org.springframework.http.HttpStatus
+import javax.validation.ConstraintValidator
+import javax.validation.ConstraintValidatorContext
 
-class UserApiErrorMessages {
-    companion object ErrorMessage {
-         val USER_NOT_FOUND = Pair(HttpStatus.NO_CONTENT, "User not found.")
-         val USER_NOT_UPDATED = Pair(HttpStatus.FORBIDDEN, "User not authorized to update the provided id.")
-         val INVALID_USER_ENTITY = Pair(HttpStatus.BAD_REQUEST, "Invalid provided User entity.")
-         val DUPLICATED_USER_ENTITY = Pair(HttpStatus.FORBIDDEN, "The provided user information already exists in database.")
+
+class DateFormatImpl : ConstraintValidator<DateFormat, String> {
+
+    override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
+        var result = false
+        val datetimeRegexPatter = "[1-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
+        val regex = Regex(datetimeRegexPatter)
+
+        value?.let {
+            result = regex.matches(it)
+        }
+        return result
     }
 }

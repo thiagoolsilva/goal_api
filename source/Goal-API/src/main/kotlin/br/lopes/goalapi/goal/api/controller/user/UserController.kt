@@ -56,7 +56,7 @@ class UserController {
     fun saveUser(
         @Valid @RequestBody userRequest: UserRequest,
         bindingResult: BindingResult,
-        uriComponentsBuilder: UriComponentsBuilder,
+        uriComponentsBuilder: UriComponentsBuilder
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
         var apiContract = ApiContract<UserResponseDetails>(null, null)
         return try {

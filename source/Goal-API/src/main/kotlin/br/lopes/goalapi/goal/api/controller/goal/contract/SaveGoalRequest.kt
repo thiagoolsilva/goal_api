@@ -16,13 +16,24 @@
 
 package br.lopes.goalapi.goal.api.controller.goal.contract
 
-import java.time.LocalDateTime
+import br.lopes.goalapi.goal.api.controller.validation.dateformat.DateFormat
+import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.PositiveOrZero
 
 data class SaveGoalRequest constructor(
-        val id: Long?,
-        val userId: Long,
-        val title:String,
-        val description:String,
-        val totalPrice:Double,
-        val dtEndGoal: LocalDateTime
+        @field:PositiveOrZero
+        val userId: Long = 0,
+
+        @field:NotEmpty
+        var title:String = "",
+
+        @field:NotEmpty
+        var description:String = "",
+
+        @field:PositiveOrZero
+        var totalPrice:Double,
+
+        @DateFormat
+        @field:NotEmpty
+        var dtEndGoal: String = ""
 )
