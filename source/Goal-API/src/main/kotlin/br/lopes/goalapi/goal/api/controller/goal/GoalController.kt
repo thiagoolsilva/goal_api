@@ -112,21 +112,26 @@ class GoalController {
     }
 
     @PutMapping
-    @Transactional
     fun updateGoal(
-        @RequestBody @Valid updateGoalRequest: UpdateGoalRequest
+        @RequestBody @Valid updateGoalRequest: UpdateGoalRequest,
+        bindingResult: BindingResult,
     ): ResponseEntity<ApiContract<GoalResponse>> {
         var apiContract = ApiContract<GoalResponse>(null, null)
-        try {
-            apiContract = handler.updateGoal(updateGoalRequest)
+        return try {
+            apiContract = handler.updateGoal(updateGoalRequest, bindingResult)
 
             return ResponseEntity.ok(apiContract)
-        } catch (constraintException: DataIntegrityViolationException) {
-            apiContract.errorMessage = ErrorResponseMessage("Invalid provided user")
-            return ResponseEntity.badRequest().body(apiContract)
-        } catch (error:Exception) {
-            apiContract.errorMessage = ErrorResponseMessage("unexpected error")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+        }  catch (error:Exception) {
+            when(error) {
+                is InvalidGoalInputException -> {
+                    apiContract.errorMessage = ErrorResponseMessage(INVALID_GOAL_ENTITY.second)
+                    ResponseEntity.status(INVALID_GOAL_ENTITY.first).body(apiContract)
+                }
+                else -> {
+                    apiContract.errorMessage = ErrorResponseMessage(ErrorConstants.GENERIC_ERROR_MESSAGE)
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+                }
+            }
         }
     }
 

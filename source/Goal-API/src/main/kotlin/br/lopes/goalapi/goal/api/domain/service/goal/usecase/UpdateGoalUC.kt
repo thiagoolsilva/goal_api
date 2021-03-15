@@ -16,6 +16,7 @@
 
 package br.lopes.goalapi.goal.api.domain.service.goal.usecase
 
+import br.lopes.goalapi.goal.api.controller.goal.error.model.UpdateGoalNotSupported
 import br.lopes.goalapi.goal.api.data.entity.Goal
 import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
@@ -25,20 +26,26 @@ import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 
 class UpdateGoalUC @Autowired constructor(
-        private val goalRepositoryContract: GoalRepositoryContract
-): UseCaseContract<GoalEntity, Goal> {
+    private val goalRepositoryContract: GoalRepositoryContract
+) : UseCaseContract<GoalEntity, Goal> {
 
     override fun execute(input: GoalEntity): Goal {
-        if(input.id != null) {
-            val goalDb = goalRepositoryContract.getOne(input.id)
-            goalDb.description = input.description
-            goalDb.dtEndGoal = input.dtEndGoal
-            goalDb.title = input.title
-            goalDb.dtUpdate = LocalDateTime.now()
+        input.id?.let {
+            val goalId = goalRepositoryContract.findById(input.id)
 
-            return goalRepositoryContract.save(goalDb)
-        } else {
-            throw IllegalArgumentException("The operation save is not supported on SaveGoalUC")
+            if (goalId.isPresent) {
+                val goalDb = goalRepositoryContract.getOne(input.id)
+                goalDb.description = input.description
+                goalDb.dtEndGoal = input.dtEndGoal
+                goalDb.title = input.title
+                goalDb.dtUpdate = LocalDateTime.now()
+
+                return goalRepositoryContract.save(goalDb)
+            } else {
+                throw UpdateGoalNotSupported("Goal id not found")
+            }
+        }?: run {
+            throw IllegalArgumentException("The goal id was not provided")
         }
     }
 }

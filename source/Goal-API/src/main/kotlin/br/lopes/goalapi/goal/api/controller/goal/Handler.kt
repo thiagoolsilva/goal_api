@@ -23,7 +23,6 @@ import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalResponse
 import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
-import br.lopes.goalapi.goal.api.controller.user.error.model.UserInputNotValid
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalConstants
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
@@ -80,7 +79,11 @@ class Handler constructor(
         return apiContract
     }
 
-    fun updateGoal(updateGoalRequest: UpdateGoalRequest): ApiContract<GoalResponse> {
+    fun updateGoal(updateGoalRequest: UpdateGoalRequest, bindingResult: BindingResult): ApiContract<GoalResponse> {
+        if(bindingResult.hasErrors()) {
+            throw InvalidGoalInputException(handleUserInputErrors(bindingResult))
+        }
+
         val apiContract = ApiContract<GoalResponse>(null, null)
 
         val goalEntity = updateGoalRequest.toGoalEntity()

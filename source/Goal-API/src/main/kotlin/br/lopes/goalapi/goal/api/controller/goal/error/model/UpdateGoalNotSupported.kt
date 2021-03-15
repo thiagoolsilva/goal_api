@@ -14,23 +14,9 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.goal.contract
+package br.lopes.goalapi.goal.api.controller.goal.error.model
 
-import br.lopes.goalapi.goal.api.controller.validation.dateformat.DateFormat
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.PositiveOrZero
+import java.lang.Exception
+import java.lang.RuntimeException
 
-data class UpdateGoalRequest constructor(
-        @field:PositiveOrZero
-        val id: Long = 0,
-
-        @field:NotEmpty
-        val title:String = "",
-
-        @field:NotEmpty
-        var description:String = "",
-
-        @DateFormat
-        @field:NotEmpty
-        var dtEndGoal: String = ""
-)
+class UpdateGoalNotSupported constructor(message:String, error: Exception = RuntimeException(message)): RuntimeException(message, error)

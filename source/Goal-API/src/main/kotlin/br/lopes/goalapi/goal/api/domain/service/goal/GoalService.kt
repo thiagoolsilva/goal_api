@@ -36,14 +36,15 @@ class GoalService @Autowired constructor(
         return getGoalByIdUC.execute(id)
     }
 
-    override fun updateGoal(goalEntity: GoalEntity): GoalEntity {
-        val updateGoalUC = useCases[UpdateGoalUC::class.toString()] as UpdateGoalUC
-        return updateGoalUC.execute(goalEntity).toGoalEntity()
-    }
-
     override fun findGoalHistoryById(params: Map<String, Any>): Page<GoalHistoryEntity> {
         val getGoalHistoryById = useCases[GetGoalHistoryById::class.toString()] as GetGoalHistoryById
         return getGoalHistoryById.execute(params).map { it.toGoalHistoryEntity() }
+    }
+
+    @Transactional
+    override fun updateGoal(goalEntity: GoalEntity): GoalEntity {
+        val updateGoalUC = useCases[UpdateGoalUC::class.toString()] as UpdateGoalUC
+        return updateGoalUC.execute(goalEntity).toGoalEntity()
     }
 
     @Transactional
