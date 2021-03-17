@@ -14,13 +14,9 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.goal.error
+package br.lopes.goalapi.goal.api.controller.goal.error.model
 
-import org.springframework.http.HttpStatus
+import java.lang.Exception
+import java.lang.RuntimeException
 
-class GoalApiErrorMessages {
-    companion object ErrorMessage {
-        val INVALID_GOAL_ENTITY = Pair(HttpStatus.BAD_REQUEST, "Invalid provided Goal entity.")
-        val GOAL_NOT_FOUND = Pair(HttpStatus.FORBIDDEN, "Invalid provided Goal ID.")
-    }
-}
+class GoalNotFoundException constructor(message:String, error: Exception = RuntimeException(message)): RuntimeException(message, error)

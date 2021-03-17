@@ -16,9 +16,15 @@
 
 package br.lopes.goalapi.goal.api.controller.goal.contract
 
-import java.time.LocalDateTime
+import br.lopes.goalapi.goal.api.controller.validation.dateformat.DateFormat
+import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.PositiveOrZero
 
 data class SaveGoalHistoryRequest constructor(
-        val dtEvent: LocalDateTime,
-        val value:Double
+        @DateFormat
+        @field:NotEmpty
+        val dtEvent: String = "",
+
+        @field:PositiveOrZero
+        val value:Double = 0.0
 )

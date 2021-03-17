@@ -21,12 +21,14 @@ import br.lopes.goalapi.goal.api.controller.ErrorConstants
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.contract.ErrorResponseMessage
 import br.lopes.goalapi.goal.api.controller.goal.contract.*
+import br.lopes.goalapi.goal.api.controller.goal.error.GoalApiErrorMessages.ErrorMessage.GOAL_NOT_FOUND
 import br.lopes.goalapi.goal.api.controller.goal.error.GoalApiErrorMessages.ErrorMessage.INVALID_GOAL_ENTITY
+import br.lopes.goalapi.goal.api.controller.goal.error.model.GoalNotFoundException
 import br.lopes.goalapi.goal.api.controller.goal.error.model.InvalidGoalInputException
+import br.lopes.goalapi.goal.api.controller.goal.error.model.UpdateGoalNotSupported
 import br.lopes.goalapi.goal.api.controller.printError
 import mu.KLogger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -114,7 +116,7 @@ class GoalController {
     @PutMapping
     fun updateGoal(
         @RequestBody @Valid updateGoalRequest: UpdateGoalRequest,
-        bindingResult: BindingResult,
+        bindingResult: BindingResult
     ): ResponseEntity<ApiContract<GoalResponse>> {
         var apiContract = ApiContract<GoalResponse>(null, null)
         return try {
@@ -122,7 +124,13 @@ class GoalController {
 
             return ResponseEntity.ok(apiContract)
         }  catch (error:Exception) {
+            error.printError(logger)
+
             when(error) {
+                is UpdateGoalNotSupported -> {
+                    apiContract.errorMessage = ErrorResponseMessage(GOAL_NOT_FOUND.second)
+                    ResponseEntity.status(GOAL_NOT_FOUND.first).body(apiContract)
+                }
                 is InvalidGoalInputException -> {
                     apiContract.errorMessage = ErrorResponseMessage(INVALID_GOAL_ENTITY.second)
                     ResponseEntity.status(INVALID_GOAL_ENTITY.first).body(apiContract)
@@ -136,35 +144,46 @@ class GoalController {
     }
 
     @PostMapping("/{id}/history")
-    @Transactional
     fun createGoalHistory(
             @PathVariable id: Long,
-            @RequestBody @Valid saveGoalHistoryRequest: SaveGoalHistoryRequest
+            @RequestBody @Valid saveGoalHistoryRequest: SaveGoalHistoryRequest,
+            bindingResult: BindingResult
     ): ResponseEntity<ApiContract<GoalHistoryResponse>> {
         var apiContract = ApiContract<GoalHistoryResponse>(null, null)
-        try {
-            apiContract = handler.createGoalHistoryById(id, saveGoalHistoryRequest)
+        return try {
+            apiContract = handler.createGoalHistoryById(id, saveGoalHistoryRequest,bindingResult)
 
             return ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
+            error.printError(logger)
+
             when(error) {
-                is EntityNotFoundException ->  apiContract.errorMessage = ErrorResponseMessage("")
-                else -> apiContract.errorMessage = ErrorResponseMessage("unexpected error")
+                is GoalNotFoundException -> {
+                    apiContract.errorMessage = ErrorResponseMessage(GOAL_NOT_FOUND.second)
+                    ResponseEntity.status(GOAL_NOT_FOUND.first).body(apiContract)
+                }
+                is InvalidGoalInputException -> {
+                    apiContract.errorMessage = ErrorResponseMessage(INVALID_GOAL_ENTITY.second)
+                    ResponseEntity.status(INVALID_GOAL_ENTITY.first).body(apiContract)
+                }
+                else -> {
+                    apiContract.errorMessage = ErrorResponseMessage(ErrorConstants.GENERIC_ERROR_MESSAGE)
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+                }
             }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     fun deleteGoal(@PathVariable id: Long) :ResponseEntity<Unit> {
-        try {
+        return try {
             handler.deleteGoalById(id)
-            return ResponseEntity.ok().build()
+            ResponseEntity.ok().build()
         } catch (error: Exception) {
             error.printError(logger)
 
-            return when(error) {
+            when(error) {
                 is UnexpectedRollbackException,
                 is EmptyResultDataAccessException -> ResponseEntity.notFound().build()
                 else -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()

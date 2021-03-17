@@ -20,11 +20,14 @@ import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toHistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.history.usecases.SaveHistoryUC
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 @Service
 class HistoryService constructor(
         private val useCases: Map<String, Any>
 ): HistoryServiceContract {
+
+    @Transactional
     override fun saveGoalHistoryById(historyEntity: HistoryEntity): HistoryEntity {
         val saveHistoryUC = useCases[SaveHistoryUC::class.toString()] as SaveHistoryUC
         val content = mapOf(

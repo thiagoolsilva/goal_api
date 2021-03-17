@@ -18,6 +18,7 @@ package br.lopes.goalapi.goal.api.controller.goal
 
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.goal.contract.*
+import br.lopes.goalapi.goal.api.controller.goal.error.model.GoalNotFoundException
 import br.lopes.goalapi.goal.api.controller.goal.error.model.InvalidGoalInputException
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalHistoryResponse
@@ -31,6 +32,7 @@ import br.lopes.goalapi.goal.api.domain.service.history.mapper.toHistoryEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.validation.BindingResult
+import javax.persistence.EntityNotFoundException
 
 class Handler constructor(
        private val goalServiceContract: GoalServiceContract,
@@ -53,17 +55,25 @@ class Handler constructor(
         return apiContract
     }
 
-    fun createGoalHistoryById(id: Long, history: SaveGoalHistoryRequest) : ApiContract<GoalHistoryResponse> {
-        val apiContract = ApiContract<GoalHistoryResponse>(null, null)
+    fun createGoalHistoryById(id: Long, history: SaveGoalHistoryRequest, bindingResult: BindingResult) : ApiContract<GoalHistoryResponse> {
+        if(bindingResult.hasErrors()) {
+            throw InvalidGoalInputException(handleUserInputErrors(bindingResult))
+        }
 
-        val historyEntity = history.toHistoryEntity()
-        historyEntity.goalId = id
+        try {
+            val apiContract = ApiContract<GoalHistoryResponse>(null, null)
 
-        val body = historyService.saveGoalHistoryById(historyEntity)
+            val historyEntity = history.toHistoryEntity()
+            historyEntity.goalId = id
 
-        apiContract.body = body.toGoalHistoryResponse()
+            val body = historyService.saveGoalHistoryById(historyEntity)
 
-        return apiContract
+            apiContract.body = body.toGoalHistoryResponse()
+
+            return apiContract
+        } catch(entityNotFoundException: EntityNotFoundException) {
+            throw GoalNotFoundException("Goal not found", entityNotFoundException)
+        }
     }
 
     fun saveGoal(saveGoalRequest: SaveGoalRequest, bindingResult: BindingResult): ApiContract<GoalResponse> {

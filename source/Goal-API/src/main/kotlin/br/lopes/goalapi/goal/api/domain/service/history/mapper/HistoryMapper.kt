@@ -20,6 +20,7 @@ import br.lopes.goalapi.goal.api.controller.goal.contract.GoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.contract.SaveGoalHistoryRequest
 import br.lopes.goalapi.goal.api.data.entity.History
 import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
+import java.time.LocalDateTime
 
 fun HistoryEntity.toHistory() = History(
         id = this.id ?: 0,
@@ -30,7 +31,7 @@ fun HistoryEntity.toHistory() = History(
 fun SaveGoalHistoryRequest.toHistoryEntity() = HistoryEntity(
         goalId = 0,
         id = null,
-        dtEvent = this.dtEvent,
+        dtEvent = LocalDateTime.parse(this.dtEvent),
         value = this.value
 )
 
