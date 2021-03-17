@@ -29,6 +29,7 @@ import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.mapper.toGoalHistoryResponse
 import br.lopes.goalapi.goal.api.domain.service.history.mapper.toHistoryEntity
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.validation.BindingResult
@@ -103,6 +104,10 @@ class Handler constructor(
     }
 
     fun deleteGoalById(id: Long) {
-        goalServiceContract.deleteById(id)
+        try{
+            goalServiceContract.deleteById(id)
+        } catch (emptyResultDataAccessException: EmptyResultDataAccessException) {
+            throw GoalNotFoundException("goal not found", emptyResultDataAccessException)
+        }
     }
 }

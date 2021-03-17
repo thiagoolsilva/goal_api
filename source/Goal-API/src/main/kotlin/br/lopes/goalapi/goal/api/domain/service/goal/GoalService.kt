@@ -53,6 +53,7 @@ class GoalService @Autowired constructor(
         return saveGoalUC.execute(goalEntity).toGoalEntity()
     }
 
+    @Transactional
     override fun deleteById(id: Long) {
         val deleteGoalUC = useCases[DeleteGoalUC::class.toString()] as DeleteGoalUC
         return deleteGoalUC.execute(id)

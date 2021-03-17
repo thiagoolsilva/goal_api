@@ -54,7 +54,7 @@ class GoalController {
 
     @GetMapping("/{id}")
     fun getGoalById(
-            @PathVariable id: Long
+        @PathVariable id: Long
     ): ResponseEntity<ApiContract<GoalResponse>> {
         var apiContract = ApiContract<GoalResponse>(null, null)
         try {
@@ -69,17 +69,17 @@ class GoalController {
 
     @GetMapping("/{id}/history")
     fun getGoalHistory(
-            @PathVariable id: Long,
-            @Valid pageable: Pageable
+        @PathVariable id: Long,
+        @Valid pageable: Pageable
     ): ResponseEntity<ApiContract<Page<GoalHistoryResponse>>> {
         var apiContract = ApiContract<Page<GoalHistoryResponse>>(null, null)
-        try {
+        return try {
             apiContract = handler.getGoalHistoryById(id, pageable)
 
             return ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
-            apiContract.errorMessage = ErrorResponseMessage("unexpected error")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+            apiContract.errorMessage = ErrorResponseMessage(ErrorConstants.GENERIC_ERROR_MESSAGE)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
 
@@ -97,10 +97,10 @@ class GoalController {
             val uri = uriComponentsBuilder.path(ApiConstants.Goal.GOAL_PATH + "/{id}").buildAndExpand(goalID).toUri()
 
             ResponseEntity.created(uri).body(apiContract)
-        } catch (error:Exception) {
+        } catch (error: Exception) {
             error.printError(logger)
 
-            when(error) {
+            when (error) {
                 is InvalidGoalInputException -> {
                     apiContract.errorMessage = ErrorResponseMessage(INVALID_GOAL_ENTITY.second)
                     ResponseEntity.status(INVALID_GOAL_ENTITY.first).body(apiContract)
@@ -123,10 +123,10 @@ class GoalController {
             apiContract = handler.updateGoal(updateGoalRequest, bindingResult)
 
             return ResponseEntity.ok(apiContract)
-        }  catch (error:Exception) {
+        } catch (error: Exception) {
             error.printError(logger)
 
-            when(error) {
+            when (error) {
                 is UpdateGoalNotSupported -> {
                     apiContract.errorMessage = ErrorResponseMessage(GOAL_NOT_FOUND.second)
                     ResponseEntity.status(GOAL_NOT_FOUND.first).body(apiContract)
@@ -145,19 +145,19 @@ class GoalController {
 
     @PostMapping("/{id}/history")
     fun createGoalHistory(
-            @PathVariable id: Long,
-            @RequestBody @Valid saveGoalHistoryRequest: SaveGoalHistoryRequest,
-            bindingResult: BindingResult
+        @PathVariable id: Long,
+        @RequestBody @Valid saveGoalHistoryRequest: SaveGoalHistoryRequest,
+        bindingResult: BindingResult
     ): ResponseEntity<ApiContract<GoalHistoryResponse>> {
         var apiContract = ApiContract<GoalHistoryResponse>(null, null)
         return try {
-            apiContract = handler.createGoalHistoryById(id, saveGoalHistoryRequest,bindingResult)
+            apiContract = handler.createGoalHistoryById(id, saveGoalHistoryRequest, bindingResult)
 
             return ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
             error.printError(logger)
 
-            when(error) {
+            when (error) {
                 is GoalNotFoundException -> {
                     apiContract.errorMessage = ErrorResponseMessage(GOAL_NOT_FOUND.second)
                     ResponseEntity.status(GOAL_NOT_FOUND.first).body(apiContract)
@@ -175,18 +175,17 @@ class GoalController {
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
-    fun deleteGoal(@PathVariable id: Long) :ResponseEntity<Unit> {
+    fun deleteGoal(@PathVariable id: Long): ResponseEntity<Unit> {
         return try {
             handler.deleteGoalById(id)
             ResponseEntity.ok().build()
         } catch (error: Exception) {
             error.printError(logger)
 
-            when(error) {
-                is UnexpectedRollbackException,
-                is EmptyResultDataAccessException -> ResponseEntity.notFound().build()
-                else -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            when (error) {
+                is GoalNotFoundException -> ResponseEntity.status(GOAL_NOT_FOUND.first).build()
+                else ->
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
             }
         }
     }
