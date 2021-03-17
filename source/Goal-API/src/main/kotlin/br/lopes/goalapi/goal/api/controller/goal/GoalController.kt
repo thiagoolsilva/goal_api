@@ -57,13 +57,13 @@ class GoalController {
         @PathVariable id: Long
     ): ResponseEntity<ApiContract<GoalResponse>> {
         var apiContract = ApiContract<GoalResponse>(null, null)
-        try {
+        return try {
             apiContract = handler.getGoalById(id)
 
-            return ResponseEntity.ok(apiContract)
+            ResponseEntity.ok(apiContract)
         } catch (error: Exception) {
-            apiContract.errorMessage = ErrorResponseMessage("unexpected error")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
+            apiContract.errorMessage = ErrorResponseMessage(ErrorConstants.GENERIC_ERROR_MESSAGE)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiContract)
         }
     }
 
