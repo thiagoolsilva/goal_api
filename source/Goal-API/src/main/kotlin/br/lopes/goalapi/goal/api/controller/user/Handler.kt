@@ -38,17 +38,17 @@ import javax.persistence.EntityNotFoundException
 
 
 class Handler @Autowired constructor(
-        private val userService: UserServiceContract
-){
+    private val userService: UserServiceContract
+) {
 
-    fun getUserById(userId:Long): ApiContract<UserResponseDetails> {
+    fun getUserById(userId: Long): ApiContract<UserResponseDetails> {
         return try {
             val response = ApiContract<UserResponseDetails>(null, null)
 
             val findUser = userService.getUserById(userId).toUserResponse()
             response.body = findUser
 
-             response
+            response
         } catch (entityNotFoundException: EntityNotFoundException) {
             throw UserNotFound(USER_NOT_FOUND.second, entityNotFoundException)
         }
@@ -70,7 +70,7 @@ class Handler @Autowired constructor(
     }
 
     fun saveUser(userRequest: UserRequest, bindingResult: BindingResult): ApiContract<UserResponseDetails> {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             throw UserInputNotValid(handleUserInputErrors(bindingResult))
         }
 
@@ -78,18 +78,21 @@ class Handler @Autowired constructor(
             val response = ApiContract<UserResponseDetails>(null, null)
 
             val userEntity = userRequest.toUserEntity()
-            val savedUser =  userService.saveUser(userEntity).toUserResponse()
+            val savedUser = userService.saveUser(userEntity).toUserResponse()
             response.body = savedUser
 
             response
-        } catch(duplicatedUserException: DataIntegrityViolationException) {
+        } catch (duplicatedUserException: DataIntegrityViolationException) {
             throw DuplicatedUserException("duplicated user", duplicatedUserException)
         }
     }
 
-    fun updateUser(updateUserRequest: UpdateUserRequest, bindingResult: BindingResult): ApiContract<UserResponseDetails> {
+    fun updateUser(
+        updateUserRequest: UpdateUserRequest,
+        bindingResult: BindingResult
+    ): ApiContract<UserResponseDetails> {
         return try {
-            if(bindingResult.hasErrors()) {
+            if (bindingResult.hasErrors()) {
                 throw UserInputNotValid(handleUserInputErrors(bindingResult))
             }
 
@@ -100,7 +103,7 @@ class Handler @Autowired constructor(
             apiContract.body = response
 
             apiContract
-        } catch(dataIntegrityViolationException: DataIntegrityViolationException) {
+        } catch (dataIntegrityViolationException: DataIntegrityViolationException) {
             throw UserNotFound("Id not found", dataIntegrityViolationException)
         }
     }

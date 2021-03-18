@@ -14,19 +14,11 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller
+package br.lopes.goalapi.goal.api.controller.config.error
 
-import mu.KLogger
-import org.springframework.validation.BindingResult
-
-fun handleUserInputErrors(bindingResult: BindingResult):String {
-
-    return bindingResult.allErrors
-            .map { it.toString() }
-            .reduce { acc, error -> acc + error}
-}
-
-fun Exception.printError(logger:KLogger) = run {
-    logger.error { this }
-    logger.error { this.printStackTrace() }
+class ErrorConstants {
+    companion object ApiError {
+        const val GENERIC_ERROR_MESSAGE = "unexpected error"
+        const val UNSUPPORTED_MEDIA_TYPE = "unupported media type"
+    }
 }

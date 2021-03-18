@@ -16,7 +16,5 @@
 
 package br.lopes.goalapi.goal.api.controller.goal.error.model
 
-import java.lang.Exception
-import java.lang.RuntimeException
-
-class UpdateGoalNotSupported constructor(message:String, error: Exception = RuntimeException(message)): RuntimeException(message, error)
+class UpdateGoalNotSupported constructor(message: String, error: Exception = RuntimeException(message)) :
+    RuntimeException(message, error)

@@ -21,9 +21,10 @@ import javax.validation.constraints.PositiveOrZero
 
 data class UpdateUserRequest constructor(
     @field:PositiveOrZero
-    var id:Long = 0,
+    var id: Long = 0,
     @field:NotEmpty
-    var name:String = "",
+    var name: String = "",
     @field:NotEmpty
-    var nickname:String = ""){
+    var nickname: String = ""
+) {
 }

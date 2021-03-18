@@ -19,7 +19,8 @@ package br.lopes.goalapi.goal.api.controller.user.contract
 import javax.validation.constraints.NotEmpty
 
 data class UserRequest constructor(
-        @field:NotEmpty
-        var name:String = "",
-        @field:NotEmpty
-        var nickname:String = "")
+    @field:NotEmpty
+    var name: String = "",
+    @field:NotEmpty
+    var nickname: String = ""
+)

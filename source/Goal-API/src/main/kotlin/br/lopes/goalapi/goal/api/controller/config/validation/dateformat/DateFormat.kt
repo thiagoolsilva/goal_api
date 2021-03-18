@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.validation.dateformat
+package br.lopes.goalapi.goal.api.controller.config.validation.dateformat
 
 import javax.validation.Constraint
 import javax.validation.Payload
@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 @Constraint(validatedBy = [DateFormatImpl::class])
 @MustBeDocumented
-annotation class DateFormat (
+annotation class DateFormat(
     val message: String = "Please, insert a valid datetime that contains the pattern yyyy-mm-DDThh:mm:ss",
     val groups: Array<KClass<Any>> = [],
     val payload: Array<KClass<Payload>> = [],

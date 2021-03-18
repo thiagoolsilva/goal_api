@@ -14,22 +14,19 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.validation.dateformat
+package br.lopes.goalapi.goal.api.controller
 
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
+import mu.KLogger
+import org.springframework.validation.BindingResult
 
+fun handleUserInputErrors(bindingResult: BindingResult): String {
 
-class DateFormatImpl : ConstraintValidator<DateFormat, String> {
+    return bindingResult.allErrors
+        .map { it.toString() }
+        .reduce { acc, error -> acc + error }
+}
 
-    override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
-        var result = false
-        val datetimeRegexPatter = "[1-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
-        val regex = Regex(datetimeRegexPatter)
-
-        value?.let {
-            result = regex.matches(it)
-        }
-        return result
-    }
+fun Exception.printError(logger: KLogger) = run {
+    logger.error { this }
+    logger.error { this.printStackTrace() }
 }

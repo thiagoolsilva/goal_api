@@ -16,7 +16,5 @@
 
 package br.lopes.goalapi.goal.api.controller.user.error.model
 
-import java.lang.Exception
-import java.lang.RuntimeException
-
-class DuplicatedUserException constructor(message:String, error: Exception = RuntimeException(message)): RuntimeException(message, error)
+class DuplicatedUserException constructor(message: String, error: Exception = RuntimeException(message)) :
+    RuntimeException(message, error)

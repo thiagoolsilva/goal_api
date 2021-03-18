@@ -17,5 +17,5 @@
 package br.lopes.goalapi.goal.api.controller.contract
 
 class ErrorResponseMessage constructor(
-        val message:String
+    val message: String
 )

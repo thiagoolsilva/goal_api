@@ -17,7 +17,7 @@
 package br.lopes.goalapi.goal.api.controller.user
 
 import br.lopes.goalapi.goal.api.controller.ApiConstants
-import br.lopes.goalapi.goal.api.controller.ErrorConstants.ApiError.GENERIC_ERROR_MESSAGE
+import br.lopes.goalapi.goal.api.controller.config.error.ErrorConstants.ApiError.GENERIC_ERROR_MESSAGE
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.contract.ErrorResponseMessage
 import br.lopes.goalapi.goal.api.controller.printError
@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
@@ -52,7 +53,10 @@ class UserController {
     @Autowired
     private lateinit var logger: KLogger
 
-    @PostMapping
+    @PostMapping(
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun saveUser(
         @Valid @RequestBody userRequest: UserRequest,
         bindingResult: BindingResult,
@@ -85,7 +89,10 @@ class UserController {
         }
     }
 
-    @PutMapping
+    @PutMapping(
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun updateUser(
         @Valid @RequestBody userRequest: UpdateUserRequest,
         bindingResult: BindingResult
@@ -115,7 +122,11 @@ class UserController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(
+        value = ["/{id}"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun getUserById(
         @PathVariable id: Long,
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
@@ -140,7 +151,10 @@ class UserController {
         }
     }
 
-    @GetMapping
+    @GetMapping(
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun getUsers(
         @RequestParam(required = false) nickname: String?,
         @Valid pageable: Pageable,

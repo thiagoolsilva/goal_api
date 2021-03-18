@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration
 class GoalPresentationModule {
 
     @Autowired
-    private lateinit var goalServiceContract:GoalServiceContract
+    private lateinit var goalServiceContract: GoalServiceContract
 
     @Autowired
     private lateinit var historyServiceContract: HistoryServiceContract

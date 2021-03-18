@@ -14,10 +14,22 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller
+package br.lopes.goalapi.goal.api.controller.config.validation.dateformat
 
-class ErrorConstants {
-    companion object ApiError {
-        const val GENERIC_ERROR_MESSAGE = "unexpected error"
+import javax.validation.ConstraintValidator
+import javax.validation.ConstraintValidatorContext
+
+
+class DateFormatImpl : ConstraintValidator<DateFormat, String> {
+
+    override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
+        var result = false
+        val datetimeRegexPatter = "[1-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
+        val regex = Regex(datetimeRegexPatter)
+
+        value?.let {
+            result = regex.matches(it)
+        }
+        return result
     }
 }

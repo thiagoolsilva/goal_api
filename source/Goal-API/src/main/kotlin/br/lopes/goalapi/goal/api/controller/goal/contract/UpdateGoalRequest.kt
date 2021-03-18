@@ -16,21 +16,21 @@
 
 package br.lopes.goalapi.goal.api.controller.goal.contract
 
-import br.lopes.goalapi.goal.api.controller.validation.dateformat.DateFormat
+import br.lopes.goalapi.goal.api.controller.config.validation.dateformat.DateFormat
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.PositiveOrZero
 
 data class UpdateGoalRequest constructor(
-        @field:PositiveOrZero
-        val id: Long = 0,
+    @field:PositiveOrZero
+    val id: Long = 0,
 
-        @field:NotEmpty
-        val title:String = "",
+    @field:NotEmpty
+    val title: String = "",
 
-        @field:NotEmpty
-        var description:String = "",
+    @field:NotEmpty
+    var description: String = "",
 
-        @DateFormat
-        @field:NotEmpty
-        var dtEndGoal: String = ""
+    @DateFormat
+    @field:NotEmpty
+    var dtEndGoal: String = ""
 )

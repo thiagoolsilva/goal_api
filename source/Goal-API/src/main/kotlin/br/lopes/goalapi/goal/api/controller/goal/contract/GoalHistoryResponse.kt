@@ -19,6 +19,6 @@ package br.lopes.goalapi.goal.api.controller.goal.contract
 import java.time.LocalDateTime
 
 data class GoalHistoryResponse constructor(
-        val dtEvent: LocalDateTime,
-        val value:Double
+    val dtEvent: LocalDateTime,
+    val value: Double
 )

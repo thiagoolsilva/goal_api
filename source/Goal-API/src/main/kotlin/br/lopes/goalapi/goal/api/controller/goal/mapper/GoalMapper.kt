@@ -22,39 +22,38 @@ import br.lopes.goalapi.goal.api.controller.goal.contract.SaveGoalRequest
 import br.lopes.goalapi.goal.api.controller.goal.contract.UpdateGoalRequest
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun GoalEntity.toGoalResponse() = GoalResponse(
-        id = this.id ?: 0,
-        title = this.title,
-        description = this.description,
-        totalPrice = this.totalPrice,
-        amount = this.amount,
-        dtEndGoal = this.dtEndGoal
+    id = this.id ?: 0,
+    title = this.title,
+    description = this.description,
+    totalPrice = this.totalPrice,
+    amount = this.amount,
+    dtEndGoal = this.dtEndGoal
 )
 
 fun GoalHistoryEntity.toGoalHistoryResponse() = GoalHistoryResponse(
-        dtEvent = this.dtEvent,
-        value = this.value
+    dtEvent = this.dtEvent,
+    value = this.value
 )
 
 fun SaveGoalRequest.toGoalEntity() = GoalEntity(
-        title = this.title,
-        description = this.description,
-        totalPrice = this.totalPrice,
-        dtEndGoal = LocalDateTime.parse(this.dtEndGoal),
-        id = null,
-        userId = this.userId,
-        amount = 0.0
+    title = this.title,
+    description = this.description,
+    totalPrice = this.totalPrice,
+    dtEndGoal = LocalDateTime.parse(this.dtEndGoal),
+    id = null,
+    userId = this.userId,
+    amount = 0.0
 )
 
 fun UpdateGoalRequest.toGoalEntity() = GoalEntity(
-        title = this.title,
-        description = this.description,
-        totalPrice = 0.0,
-        dtEndGoal = LocalDateTime.parse(this.dtEndGoal),
-        id = this.id,
-        userId = 0,
-        amount = 0.0
+    title = this.title,
+    description = this.description,
+    totalPrice = 0.0,
+    dtEndGoal = LocalDateTime.parse(this.dtEndGoal),
+    id = this.id,
+    userId = 0,
+    amount = 0.0
 )

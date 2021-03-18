@@ -36,8 +36,8 @@ import org.springframework.validation.BindingResult
 import javax.persistence.EntityNotFoundException
 
 class Handler constructor(
-       private val goalServiceContract: GoalServiceContract,
-       private val historyService: HistoryServiceContract
+    private val goalServiceContract: GoalServiceContract,
+    private val historyService: HistoryServiceContract
 ) {
     fun getGoalById(id: Long): ApiContract<GoalResponse> {
         val response = ApiContract<GoalResponse>(null, null)
@@ -49,15 +49,21 @@ class Handler constructor(
     fun getGoalHistoryById(id: Long, pageable: Pageable): ApiContract<Page<GoalHistoryResponse>> {
         val apiContract = ApiContract<Page<GoalHistoryResponse>>(null, null)
 
-        val params = mapOf(GoalConstants.PARAMS.QUERY_ID_PARAM to id,
-                GoalConstants.PARAMS.QUERY_PAGEABLE_PARAM to pageable)
+        val params = mapOf(
+            GoalConstants.PARAMS.QUERY_ID_PARAM to id,
+            GoalConstants.PARAMS.QUERY_PAGEABLE_PARAM to pageable
+        )
         apiContract.body = goalServiceContract.findGoalHistoryById(params).map { it.toGoalHistoryResponse() }
 
         return apiContract
     }
 
-    fun createGoalHistoryById(id: Long, history: SaveGoalHistoryRequest, bindingResult: BindingResult) : ApiContract<GoalHistoryResponse> {
-        if(bindingResult.hasErrors()) {
+    fun createGoalHistoryById(
+        id: Long,
+        history: SaveGoalHistoryRequest,
+        bindingResult: BindingResult
+    ): ApiContract<GoalHistoryResponse> {
+        if (bindingResult.hasErrors()) {
             throw InvalidGoalInputException(handleUserInputErrors(bindingResult))
         }
 
@@ -72,13 +78,13 @@ class Handler constructor(
             apiContract.body = body.toGoalHistoryResponse()
 
             return apiContract
-        } catch(entityNotFoundException: EntityNotFoundException) {
+        } catch (entityNotFoundException: EntityNotFoundException) {
             throw GoalNotFoundException("Goal not found", entityNotFoundException)
         }
     }
 
     fun saveGoal(saveGoalRequest: SaveGoalRequest, bindingResult: BindingResult): ApiContract<GoalResponse> {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             throw InvalidGoalInputException(handleUserInputErrors(bindingResult))
         }
 
@@ -91,7 +97,7 @@ class Handler constructor(
     }
 
     fun updateGoal(updateGoalRequest: UpdateGoalRequest, bindingResult: BindingResult): ApiContract<GoalResponse> {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             throw InvalidGoalInputException(handleUserInputErrors(bindingResult))
         }
 
@@ -104,7 +110,7 @@ class Handler constructor(
     }
 
     fun deleteGoalById(id: Long) {
-        try{
+        try {
             goalServiceContract.deleteById(id)
         } catch (emptyResultDataAccessException: EmptyResultDataAccessException) {
             throw GoalNotFoundException("goal not found", emptyResultDataAccessException)

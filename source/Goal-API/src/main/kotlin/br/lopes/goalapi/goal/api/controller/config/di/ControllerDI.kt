@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller.di
+package br.lopes.goalapi.goal.api.controller.config.di
 
 import mu.KLogger
 import mu.KotlinLogging

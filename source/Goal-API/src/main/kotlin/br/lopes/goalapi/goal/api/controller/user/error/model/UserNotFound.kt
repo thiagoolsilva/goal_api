@@ -16,10 +16,7 @@
 
 package br.lopes.goalapi.goal.api.controller.user.error.model
 
-import java.lang.Exception
-import java.lang.RuntimeException
-
 class UserNotFound(message: String, error: Exception = RuntimeException(message)) : RuntimeException(message, error) {
-    val errorMessage:String = message
+    val errorMessage: String = message
     val error: Exception = error
 }
