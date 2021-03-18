@@ -33,6 +33,7 @@ import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.UnexpectedRollbackException
 import org.springframework.validation.BindingResult
@@ -52,7 +53,9 @@ class GoalController {
     @Autowired
     private lateinit var logger: KLogger
 
-    @GetMapping("/{id}")
+    @GetMapping(value = ["/{id}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun getGoalById(
         @PathVariable id: Long
     ): ResponseEntity<ApiContract<GoalResponse>> {
@@ -67,7 +70,9 @@ class GoalController {
         }
     }
 
-    @GetMapping("/{id}/history")
+    @GetMapping(value = ["/{id}/history"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun getGoalHistory(
         @PathVariable id: Long,
         @Valid pageable: Pageable
@@ -83,7 +88,9 @@ class GoalController {
         }
     }
 
-    @PostMapping
+    @PostMapping(
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE])
     fun saveGoal(
         @RequestBody @Valid saveGoalRequest: SaveGoalRequest,
         bindingResult: BindingResult,
@@ -113,7 +120,10 @@ class GoalController {
         }
     }
 
-    @PutMapping
+    @PutMapping(
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun updateGoal(
         @RequestBody @Valid updateGoalRequest: UpdateGoalRequest,
         bindingResult: BindingResult
@@ -143,7 +153,9 @@ class GoalController {
         }
     }
 
-    @PostMapping("/{id}/history")
+    @PostMapping(value = ["/{id}/history"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE])
     fun createGoalHistory(
         @PathVariable id: Long,
         @RequestBody @Valid saveGoalHistoryRequest: SaveGoalHistoryRequest,
@@ -174,7 +186,8 @@ class GoalController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = ["/{id}"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun deleteGoal(@PathVariable id: Long): ResponseEntity<Unit> {
         return try {
             handler.deleteGoalById(id)
