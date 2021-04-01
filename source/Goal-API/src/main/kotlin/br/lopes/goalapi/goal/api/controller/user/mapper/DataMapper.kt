@@ -24,13 +24,15 @@ import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
 fun UserRequest.toUserEntity() = UserEntity(
     id = null,
     name = this.name,
-    nickname = this.nickname
+    nickname = this.nickname,
+    entityVersion = null
 )
 
-fun UpdateUserRequest.toUserEntity() = UserEntity(
+fun UpdateUserRequest.toUserEntity(entityVersion:Long) = UserEntity(
     id = this.id,
     name = this.name,
-    nickname = this.nickname
+    nickname = this.nickname,
+    entityVersion = entityVersion
 )
 
 fun UserEntity.toUserResponse() = UserResponseDetails(

@@ -1,4 +1,4 @@
-INSERT INTO USER(name, nickname, dtCreate) VALUES ('thiago lopes da silva', 'thiagoolsilva', '2019-05-05 18:00:00')
+INSERT INTO USER(name, version, nickname, dtCreate) VALUES ('thiago lopes da silva', 0, 'thiagoolsilva', '2019-05-05 18:00:00')
 INSERT INTO GOAL(title, description, totalprice, dtendgoal, dtcreate, user_id) VALUES ('My First Goal', 'This is a very short description about the goal', 2000, '2019-05-15 18:00:00','2019-05-05 18:00:00',1)
 INSERT INTO HISTORY(dtevent, value, goal_id) VALUES('2019-05-05 18:00:00', 100, 1)
 INSERT INTO HISTORY(dtevent, value, goal_id) VALUES('2019-05-05 18:00:00', 200, 1)

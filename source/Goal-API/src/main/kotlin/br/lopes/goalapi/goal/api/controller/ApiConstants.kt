@@ -25,5 +25,4 @@ class ApiConstants {
         const val GOAL_PATH = "/goal"
     }
 
-
 }

@@ -16,6 +16,7 @@
 
 package br.lopes.goalapi.goal.api.data.entity
 
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -23,6 +24,9 @@ import javax.persistence.*
 class User constructor(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = 0,
+
+        @Version
+        var version:Long = 0,
 
         @Column(name = "name")
         var name:String,
@@ -36,6 +40,6 @@ class User constructor(
         @Column(name = "dtupdate")
         var dtUpdate:LocalDateTime?,
 
-        @OneToMany(mappedBy = "user", targetEntity = Goal::class)
+        @OneToMany(mappedBy = "user",  cascade = [CascadeType.ALL], targetEntity = Goal::class)
         var goals:List<Goal> = mutableListOf()
 )

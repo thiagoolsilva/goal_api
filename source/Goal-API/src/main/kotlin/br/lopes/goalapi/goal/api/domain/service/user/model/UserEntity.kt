@@ -17,6 +17,7 @@
 package br.lopes.goalapi.goal.api.domain.service.user.model
 
 data class UserEntity constructor(
+        val entityVersion:Long?,
         val id:Long?,
         val name:String,
         val nickname:String)

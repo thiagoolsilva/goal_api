@@ -24,17 +24,19 @@ import br.lopes.goalapi.goal.api.controller.printError
 import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.DUPLICATED_USER_ENTITY
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.INVALID_USER_ENTITY
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.USER_NOT_FOUND
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.USER_NOT_UPDATED
-import br.lopes.goalapi.goal.api.controller.user.error.model.DuplicatedUserException
-import br.lopes.goalapi.goal.api.controller.user.error.model.UserInputNotValid
-import br.lopes.goalapi.goal.api.controller.user.error.model.UserNotFound
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.BAD_REQUEST_FOR_IF_MATCH_NOT_PROVIDED
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.BAD_REQUEST_FOR_INVALID_USER_ENTITY
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.FORBIDDEN_FOR_DUPLICATED_USER_ENTITY
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.FORBIDDEN_FOR_USER_NOT_UPDATED
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.NOT_MODIFIED_FOR_USER_DATA
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.NO_CONTENT_FOR_USER_NOT_FOUND
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.PRE_CONDITION_FAILED_FOR_USER_RESOURCE
+import br.lopes.goalapi.goal.api.controller.user.error.model.*
 import mu.KLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpHeaders.IF_MATCH
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -74,12 +76,12 @@ class UserController {
 
             when (error) {
                 is UserInputNotValid -> {
-                    apiContract.errorMessage = ErrorResponseMessage(INVALID_USER_ENTITY.second)
-                    ResponseEntity.status(INVALID_USER_ENTITY.first).body(apiContract)
+                    apiContract.errorMessage = ErrorResponseMessage(BAD_REQUEST_FOR_INVALID_USER_ENTITY.second)
+                    ResponseEntity.status(BAD_REQUEST_FOR_INVALID_USER_ENTITY.first).body(apiContract)
                 }
                 is DuplicatedUserException -> {
-                    apiContract.errorMessage = ErrorResponseMessage(DUPLICATED_USER_ENTITY.second)
-                    ResponseEntity.status(DUPLICATED_USER_ENTITY.first).body(apiContract)
+                    apiContract.errorMessage = ErrorResponseMessage(FORBIDDEN_FOR_DUPLICATED_USER_ENTITY.second)
+                    ResponseEntity.status(FORBIDDEN_FOR_DUPLICATED_USER_ENTITY.first).body(apiContract)
                 }
                 else -> {
                     apiContract.errorMessage = ErrorResponseMessage(GENERIC_ERROR_MESSAGE)
@@ -95,24 +97,34 @@ class UserController {
     )
     fun updateUser(
         @Valid @RequestBody userRequest: UpdateUserRequest,
-        bindingResult: BindingResult
+        bindingResult: BindingResult,
+        @RequestHeader(IF_MATCH) ifMatch:String?,
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
         var apiContract = ApiContract<UserResponseDetails>(null, null)
         return try {
-            apiContract = handler.updateUser(userRequest, bindingResult)
+            apiContract = handler.updateUser(userRequest, ifMatch, bindingResult)
 
-            ResponseEntity.ok(apiContract)
+            ResponseEntity
+                .ok(apiContract)
         } catch (error: Exception) {
             error.printError(logger)
 
             when (error) {
                 is UserNotFound -> {
-                    apiContract.errorMessage = ErrorResponseMessage(USER_NOT_UPDATED.second)
-                    ResponseEntity.status(USER_NOT_UPDATED.first).body(apiContract)
+                    apiContract.errorMessage = ErrorResponseMessage(FORBIDDEN_FOR_USER_NOT_UPDATED.second)
+                    ResponseEntity.status(FORBIDDEN_FOR_USER_NOT_UPDATED.first).body(apiContract)
                 }
                 is UserInputNotValid -> {
-                    apiContract.errorMessage = ErrorResponseMessage(INVALID_USER_ENTITY.second)
-                    ResponseEntity.status(INVALID_USER_ENTITY.first).body(apiContract)
+                    apiContract.errorMessage = ErrorResponseMessage(BAD_REQUEST_FOR_INVALID_USER_ENTITY.second)
+                    ResponseEntity.status(BAD_REQUEST_FOR_INVALID_USER_ENTITY.first).body(apiContract)
+                }
+                is IfMatchNotProvided -> {
+                    apiContract.errorMessage = ErrorResponseMessage(BAD_REQUEST_FOR_IF_MATCH_NOT_PROVIDED.second)
+                    ResponseEntity.status(BAD_REQUEST_FOR_IF_MATCH_NOT_PROVIDED.first).body(apiContract)
+                }
+                is UserPreConditionFailed -> {
+                    apiContract.errorMessage = ErrorResponseMessage(PRE_CONDITION_FAILED_FOR_USER_RESOURCE.second)
+                    ResponseEntity.status(PRE_CONDITION_FAILED_FOR_USER_RESOURCE.first).body(apiContract)
                 }
                 else -> {
                     apiContract.errorMessage = ErrorResponseMessage(GENERIC_ERROR_MESSAGE)
@@ -129,19 +141,30 @@ class UserController {
     )
     fun getUserById(
         @PathVariable id: Long,
+        @RequestHeader headers: Map<String,String>
     ): ResponseEntity<ApiContract<UserResponseDetails>> {
         var apiContract = ApiContract<UserResponseDetails>(null, null)
         return try {
-            apiContract = handler.getUserById(id)
+            val handledUser = handler.getUserById(id, headers)
 
-            ResponseEntity.ok(apiContract)
+            val userEtagVersion = handledUser.first.toString()
+            apiContract = handledUser.second
+
+            ResponseEntity
+                .ok()
+                .eTag(userEtagVersion)
+                .body(apiContract)
         } catch (error: Exception) {
             error.printError(logger)
 
             when (error) {
                 is UserNotFound -> {
-                    apiContract.errorMessage = ErrorResponseMessage(USER_NOT_FOUND.second)
-                    ResponseEntity.status(USER_NOT_FOUND.first).body(apiContract)
+                    apiContract.errorMessage = ErrorResponseMessage(NO_CONTENT_FOR_USER_NOT_FOUND.second)
+                    ResponseEntity.status(NO_CONTENT_FOR_USER_NOT_FOUND.first).body(apiContract)
+                }
+                is UserDataNotModified -> {
+                    apiContract.errorMessage = ErrorResponseMessage(NOT_MODIFIED_FOR_USER_DATA.second)
+                    ResponseEntity.status(NOT_MODIFIED_FOR_USER_DATA.first).body(apiContract)
                 }
                 else -> {
                     apiContract.errorMessage = ErrorResponseMessage(GENERIC_ERROR_MESSAGE)

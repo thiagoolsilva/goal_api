@@ -21,10 +21,8 @@ import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
 import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
-import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.USER_NOT_FOUND
-import br.lopes.goalapi.goal.api.controller.user.error.model.DuplicatedUserException
-import br.lopes.goalapi.goal.api.controller.user.error.model.UserInputNotValid
-import br.lopes.goalapi.goal.api.controller.user.error.model.UserNotFound
+import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.NO_CONTENT_FOR_USER_NOT_FOUND
+import br.lopes.goalapi.goal.api.controller.user.error.model.*
 import br.lopes.goalapi.goal.api.controller.user.mapper.toUserEntity
 import br.lopes.goalapi.goal.api.controller.user.mapper.toUserResponse
 import br.lopes.goalapi.goal.api.domain.service.user.UserServiceConstants
@@ -33,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpHeaders.IF_NONE_MATCH
 import org.springframework.validation.BindingResult
 import javax.persistence.EntityNotFoundException
 
@@ -41,16 +40,23 @@ class Handler @Autowired constructor(
     private val userService: UserServiceContract
 ) {
 
-    fun getUserById(userId: Long): ApiContract<UserResponseDetails> {
+    fun getUserById(userId: Long, headers:Map<String, String>): Pair<Long, ApiContract<UserResponseDetails>> {
         return try {
+            val userDb = userService.getUserById(userId)
             val response = ApiContract<UserResponseDetails>(null, null)
+            val ifNoneMatch = if (headers.containsKey(IF_NONE_MATCH)) headers[IF_NONE_MATCH]!! else ""
 
-            val findUser = userService.getUserById(userId).toUserResponse()
-            response.body = findUser
+            if(ifNoneMatch.isNotEmpty() && userDb.entityVersion == ifNoneMatch.toLong()) {
+                throw UserDataNotModified("User data not modified.")
+            }
 
-            response
+            val userEntityVersion = userDb.entityVersion ?: 0
+            val userResponse = userDb.toUserResponse()
+            response.body = userResponse
+
+            Pair(userEntityVersion,response)
         } catch (entityNotFoundException: EntityNotFoundException) {
-            throw UserNotFound(USER_NOT_FOUND.second, entityNotFoundException)
+            throw UserNotFound(NO_CONTENT_FOR_USER_NOT_FOUND.second, entityNotFoundException)
         }
     }
 
@@ -89,6 +95,7 @@ class Handler @Autowired constructor(
 
     fun updateUser(
         updateUserRequest: UpdateUserRequest,
+        entityVersion:String?,
         bindingResult: BindingResult
     ): ApiContract<UserResponseDetails> {
         return try {
@@ -96,13 +103,17 @@ class Handler @Autowired constructor(
                 throw UserInputNotValid(handleUserInputErrors(bindingResult))
             }
 
-            val apiContract = ApiContract<UserResponseDetails>(null, null)
+            entityVersion?.let {
+                val apiContract = ApiContract<UserResponseDetails>(null, null)
 
-            val userEntity = updateUserRequest.toUserEntity()
-            val response = userService.updateUser(userEntity).toUserResponse()
-            apiContract.body = response
+                val userEntity = updateUserRequest.toUserEntity(entityVersion.toLong())
+                val response = userService.updateUser(userEntity).toUserResponse()
+                apiContract.body = response
 
-            apiContract
+                apiContract
+            } ?: kotlin.run {
+                throw IfMatchNotProvided("The header If-Match was not provided.")
+            }
         } catch (dataIntegrityViolationException: DataIntegrityViolationException) {
             throw UserNotFound("Id not found", dataIntegrityViolationException)
         }

@@ -31,5 +31,6 @@ fun UserEntity.toUserDb() = User(
 fun User.toUserEntity() = UserEntity(
         id = this.id,
         name = this.name,
-        nickname = this.nickname
+        nickname = this.nickname,
+        entityVersion = this.version
 )
