@@ -16,6 +16,7 @@
 
 package br.lopes.goalapi.goal.api.domain.service.user.usecase
 
+import br.lopes.goalapi.goal.api.controller.goal.error.model.GoalPreConditionFailed
 import br.lopes.goalapi.goal.api.controller.user.error.model.UserPreConditionFailed
 import br.lopes.goalapi.goal.api.controller.user.error.model.UserNotFound
 import br.lopes.goalapi.goal.api.data.entity.User

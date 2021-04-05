@@ -18,6 +18,8 @@ package br.lopes.goalapi.goal.api.controller.user
 
 import br.lopes.goalapi.goal.api.controller.ApiConstants
 import br.lopes.goalapi.goal.api.controller.config.error.ErrorConstants.ApiError.GENERIC_ERROR_MESSAGE
+import br.lopes.goalapi.goal.api.controller.config.error.model.DataNotModified
+import br.lopes.goalapi.goal.api.controller.config.error.model.IfMatchNotProvided
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.contract.ErrorResponseMessage
 import br.lopes.goalapi.goal.api.controller.printError
@@ -162,7 +164,7 @@ class UserController {
                     apiContract.errorMessage = ErrorResponseMessage(NO_CONTENT_FOR_USER_NOT_FOUND.second)
                     ResponseEntity.status(NO_CONTENT_FOR_USER_NOT_FOUND.first).body(apiContract)
                 }
-                is UserDataNotModified -> {
+                is DataNotModified -> {
                     apiContract.errorMessage = ErrorResponseMessage(NOT_MODIFIED_FOR_USER_DATA.second)
                     ResponseEntity.status(NOT_MODIFIED_FOR_USER_DATA.first).body(apiContract)
                 }

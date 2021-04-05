@@ -17,6 +17,7 @@
 package br.lopes.goalapi.goal.api.domain.service.history.di
 
 import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
+import br.lopes.goalapi.goal.api.data.repository.HistoryRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryService
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.usecases.SaveHistoryUC
@@ -28,8 +29,8 @@ import org.springframework.context.annotation.Primary
 @Configuration
 class HistoryServiceModule {
 
-//    @Autowired
-//    private lateinit var  historyRepositoryContract: HistoryRepositoryContract
+    @Autowired
+    private lateinit var  historyRepositoryContract: HistoryRepositoryContract
 
     @Autowired
     private lateinit var goalRepositoryContract: GoalRepositoryContract
@@ -45,7 +46,7 @@ class HistoryServiceModule {
 
     @Bean
     fun createSaveHistoryUc() : SaveHistoryUC {
-        return SaveHistoryUC(goalRepositoryContract)
+        return SaveHistoryUC(goalRepositoryContract, historyRepositoryContract)
     }
 
 }

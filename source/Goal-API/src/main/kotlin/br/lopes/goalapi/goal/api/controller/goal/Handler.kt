@@ -24,6 +24,8 @@ import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalResponse
 import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
+import br.lopes.goalapi.goal.api.controller.config.error.model.IfMatchNotProvided
+import br.lopes.goalapi.goal.api.controller.config.error.model.DataNotModified
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalConstants
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalServiceContract
 import br.lopes.goalapi.goal.api.domain.service.history.HistoryServiceContract
@@ -39,11 +41,20 @@ class Handler constructor(
     private val goalServiceContract: GoalServiceContract,
     private val historyService: HistoryServiceContract
 ) {
-    fun getGoalById(id: Long): ApiContract<GoalResponse> {
+    fun getGoalById(id: Long,
+                    ifNoneMatch:String?,
+          onGoalIdFinished: (body: ApiContract<GoalResponse>, entityVersion:Long) -> Unit)  {
         val response = ApiContract<GoalResponse>(null, null)
-        response.body = goalServiceContract.findGoalById(id).toGoalResponse()
+        val goalDb = goalServiceContract.findGoalById(id)
 
-        return response
+        if(ifNoneMatch != null && ifNoneMatch.isNotEmpty() && goalDb.entityVersion == ifNoneMatch.toLong()) {
+            throw DataNotModified("Goal data not modified.")
+        }
+        response.body = goalDb.toGoalResponse()
+
+        val entityVersion = goalDb.entityVersion ?: 0
+
+        onGoalIdFinished(response, entityVersion)
     }
 
     fun getGoalHistoryById(id: Long, pageable: Pageable): ApiContract<Page<GoalHistoryResponse>> {
@@ -61,12 +72,12 @@ class Handler constructor(
     fun createGoalHistoryById(
         id: Long,
         history: SaveGoalHistoryRequest,
-        bindingResult: BindingResult
-    ): ApiContract<GoalHistoryResponse> {
+        bindingResult: BindingResult,
+        onHandleFinished: (body:ApiContract<GoalHistoryResponse>, goalHistoryCreated: Long ) -> Unit
+    ) {
         if (bindingResult.hasErrors()) {
             throw InvalidGoalInputException(handleUserInputErrors(bindingResult))
         }
-
         try {
             val apiContract = ApiContract<GoalHistoryResponse>(null, null)
 
@@ -74,10 +85,11 @@ class Handler constructor(
             historyEntity.goalId = id
 
             val body = historyService.saveGoalHistoryById(historyEntity)
-
             apiContract.body = body.toGoalHistoryResponse()
 
-            return apiContract
+            val goalHistoryId = body.id ?: 0
+
+            onHandleFinished(apiContract, goalHistoryId)
         } catch (entityNotFoundException: EntityNotFoundException) {
             throw GoalNotFoundException("Goal not found", entityNotFoundException)
         }
@@ -96,17 +108,23 @@ class Handler constructor(
         return apiContract
     }
 
-    fun updateGoal(updateGoalRequest: UpdateGoalRequest, bindingResult: BindingResult): ApiContract<GoalResponse> {
+    fun updateGoal(goalId:Long,
+                   updateGoalRequest: UpdateGoalRequest,
+                   entityVersion: String?,
+                   bindingResult: BindingResult): ApiContract<GoalResponse> {
         if (bindingResult.hasErrors()) {
             throw InvalidGoalInputException(handleUserInputErrors(bindingResult))
         }
 
-        val apiContract = ApiContract<GoalResponse>(null, null)
+        entityVersion?.let {
+            val apiContract = ApiContract<GoalResponse>(null, null)
+            val goalEntity = updateGoalRequest.toGoalEntity(entityVersion.toLong(), goalId)
+            apiContract.body = goalServiceContract.updateGoal(goalEntity).toGoalResponse()
 
-        val goalEntity = updateGoalRequest.toGoalEntity()
-        apiContract.body = goalServiceContract.updateGoal(goalEntity).toGoalResponse()
-
-        return apiContract
+            return apiContract
+        } ?: kotlin.run {
+            throw IfMatchNotProvided("The header If-Match was not provided.")
+        }
     }
 
     fun deleteGoalById(id: Long) {

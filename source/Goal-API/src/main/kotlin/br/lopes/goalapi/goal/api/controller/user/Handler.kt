@@ -16,6 +16,8 @@
 
 package br.lopes.goalapi.goal.api.controller.user
 
+import br.lopes.goalapi.goal.api.controller.config.error.model.DataNotModified
+import br.lopes.goalapi.goal.api.controller.config.error.model.IfMatchNotProvided
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
 import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
@@ -44,10 +46,10 @@ class Handler @Autowired constructor(
         return try {
             val userDb = userService.getUserById(userId)
             val response = ApiContract<UserResponseDetails>(null, null)
-            val ifNoneMatch = if (headers.containsKey(IF_NONE_MATCH)) headers[IF_NONE_MATCH]!! else ""
+            val ifNoneMatch = if (headers.containsKey(IF_NONE_MATCH.toLowerCase())) headers[IF_NONE_MATCH.toLowerCase()]!! else ""
 
             if(ifNoneMatch.isNotEmpty() && userDb.entityVersion == ifNoneMatch.toLong()) {
-                throw UserDataNotModified("User data not modified.")
+                throw DataNotModified("User data not modified.")
             }
 
             val userEntityVersion = userDb.entityVersion ?: 0

@@ -18,6 +18,7 @@ package br.lopes.goalapi.goal.api.domain.service.history.usecases
 
 import br.lopes.goalapi.goal.api.data.entity.History
 import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
+import br.lopes.goalapi.goal.api.data.repository.HistoryRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
 import br.lopes.goalapi.goal.api.domain.service.history.GoalHistoryContsants
 import br.lopes.goalapi.goal.api.domain.service.history.mapper.toHistory
@@ -25,7 +26,8 @@ import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
 import org.springframework.beans.factory.annotation.Autowired
 
 class SaveHistoryUC @Autowired constructor(
-        private val goalRepositoryContract: GoalRepositoryContract
+        private val goalRepositoryContract: GoalRepositoryContract,
+        private val goalHistoryRepositoryContract: HistoryRepositoryContract
 ) : UseCaseContract<Map<String, Any>, History> {
     override fun execute(input: Map<String, Any>): History {
         val goalId = input[GoalHistoryContsants.SaveParams.GOAL_ID] as Long
@@ -37,9 +39,7 @@ class SaveHistoryUC @Autowired constructor(
         historyDb.goal = goalDb
         goalDb.history.add(historyDb)
 
-        goalRepositoryContract.save(goalDb)
-
-        return historyDb
+        return goalHistoryRepositoryContract.save(historyDb)
     }
 
 }

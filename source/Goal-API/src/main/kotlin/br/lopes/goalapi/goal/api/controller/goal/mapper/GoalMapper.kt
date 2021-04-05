@@ -45,15 +45,17 @@ fun SaveGoalRequest.toGoalEntity() = GoalEntity(
     dtEndGoal = LocalDateTime.parse(this.dtEndGoal),
     id = null,
     userId = this.userId,
-    amount = 0.0
+    amount = 0.0,
+    entityVersion = null
 )
 
-fun UpdateGoalRequest.toGoalEntity() = GoalEntity(
+fun UpdateGoalRequest.toGoalEntity(entityVersion:Long, goalId:Long) = GoalEntity(
     title = this.title,
     description = this.description,
     totalPrice = 0.0,
     dtEndGoal = LocalDateTime.parse(this.dtEndGoal),
-    id = this.id,
+    id = goalId,
     userId = 0,
-    amount = 0.0
+    amount = 0.0,
+    entityVersion = entityVersion
 )

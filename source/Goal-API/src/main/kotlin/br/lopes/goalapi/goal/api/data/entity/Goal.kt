@@ -24,6 +24,9 @@ class Goal constructor(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = 0,
 
+        @Version
+        var version:Long = 0,
+
         @Column(name = "title")
         var title: String,
 

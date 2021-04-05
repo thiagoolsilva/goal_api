@@ -21,9 +21,6 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.PositiveOrZero
 
 data class UpdateGoalRequest constructor(
-    @field:PositiveOrZero
-    val id: Long = 0,
-
     @field:NotEmpty
     val title: String = "",
 

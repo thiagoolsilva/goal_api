@@ -20,6 +20,7 @@ import java.time.LocalDateTime
 
 data class GoalEntity constructor(
         val id: Long?,
+        val entityVersion: Long?,
         val userId: Long,
         val title: String,
         val description: String,

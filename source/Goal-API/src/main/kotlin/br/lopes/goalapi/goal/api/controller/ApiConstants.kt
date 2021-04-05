@@ -25,4 +25,8 @@ class ApiConstants {
         const val GOAL_PATH = "/goal"
     }
 
+    object GoalHistory {
+        const val GOAL_HISTORY_PATH = "/history"
+    }
+
 }

@@ -16,13 +16,13 @@
 
 package br.lopes.goalapi.goal.api.domain.service.goal.usecase
 
-import br.lopes.goalapi.goal.api.controller.goal.error.model.UpdateGoalNotSupported
+import br.lopes.goalapi.goal.api.controller.goal.error.model.GoalNotFoundException
+import br.lopes.goalapi.goal.api.controller.goal.error.model.GoalPreConditionFailed
 import br.lopes.goalapi.goal.api.data.entity.Goal
 import br.lopes.goalapi.goal.api.data.repository.GoalRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
 import org.springframework.beans.factory.annotation.Autowired
-import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 
 class UpdateGoalUC @Autowired constructor(
@@ -30,22 +30,23 @@ class UpdateGoalUC @Autowired constructor(
 ) : UseCaseContract<GoalEntity, Goal> {
 
     override fun execute(input: GoalEntity): Goal {
-        input.id?.let {
-            val goalId = goalRepositoryContract.findById(input.id)
+        val goalEntityId = input.id ?: 0
+        val goalId = goalRepositoryContract.findById(goalEntityId)
+        if (goalId.isPresent) {
+            val goalDb = goalId.get()
 
-            if (goalId.isPresent) {
-                val goalDb = goalRepositoryContract.getOne(input.id)
-                goalDb.description = input.description
-                goalDb.dtEndGoal = input.dtEndGoal
-                goalDb.title = input.title
-                goalDb.dtUpdate = LocalDateTime.now()
-
-                return goalRepositoryContract.save(goalDb)
-            } else {
-                throw UpdateGoalNotSupported("Goal id not found")
+            if(input.entityVersion != goalDb.version) {
+                throw GoalPreConditionFailed("the provided if-match is not the same as expected in database.")
             }
-        }?: run {
-            throw IllegalArgumentException("The goal id was not provided")
+
+            goalDb.description = input.description
+            goalDb.dtEndGoal = input.dtEndGoal
+            goalDb.title = input.title
+            goalDb.dtUpdate = LocalDateTime.now()
+
+            return goalRepositoryContract.save(goalDb)
+        } else {
+            throw GoalNotFoundException("Goal id not found")
         }
     }
 }

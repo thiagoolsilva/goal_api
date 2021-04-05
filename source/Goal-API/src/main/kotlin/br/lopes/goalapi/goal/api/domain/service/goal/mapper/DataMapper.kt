@@ -31,7 +31,8 @@ fun Goal.toGoalEntity() = GoalEntity(
         totalPrice = this.totalPrice,
         dtEndGoal = this.dtEndGoal,
         userId = this.user.id,
-        amount =  this.history.map { it.value }.sum()
+        amount =  this.history.map { it.value }.sum(),
+        entityVersion = this.version
 )
 
 fun History.toGoalHistoryEntity() = GoalHistoryEntity(
