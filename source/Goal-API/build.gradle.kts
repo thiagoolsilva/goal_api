@@ -39,6 +39,8 @@ dependencies {
 	// logging
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
 
+	// cache
+//	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
 	// dev dependencies
 	developmentOnly("org.springframework.boot:spring-boot-devtools")

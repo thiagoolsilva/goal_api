@@ -1,0 +1,15 @@
+version: "3.3"
+services:
+  goal-api:
+    container_name: goal-rest-api
+    build:
+      context: Goal-API
+      dockerfile: Dockerfile
+    image: goal-rest-api
+    ports:
+      - 8080:8080
+    networks:
+      - api-network
+networks:
+    api-network:
+        driver: bridge
