@@ -16,20 +16,19 @@
 
 package br.lopes.goalapi.goal.api.domain.service.user.usecase
 
-import br.lopes.goalapi.goal.api.data.entity.User
+import br.lopes.goalapi.goal.api.data.entity.Customer
 import br.lopes.goalapi.goal.api.data.repository.UserRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
 import br.lopes.goalapi.goal.api.domain.service.user.mapper.toUserDb
 import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
 import org.springframework.beans.factory.annotation.Autowired
-import javax.transaction.Transactional
 
 class SaveUserUC @Autowired constructor(
         private val userRepositoryContract: UserRepositoryContract
-): UseCaseContract<UserEntity, User> {
+): UseCaseContract<UserEntity, Customer> {
 
 
-    override fun execute(input: UserEntity): User {
+    override fun execute(input: UserEntity): Customer {
         val userDb = input.toUserDb()
 
         if(!userRepositoryContract.existsById(userDb.id)) {

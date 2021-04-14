@@ -16,10 +16,9 @@
 
 package br.lopes.goalapi.goal.api.domain.service.user.usecase
 
-import br.lopes.goalapi.goal.api.controller.goal.error.model.GoalPreConditionFailed
 import br.lopes.goalapi.goal.api.controller.user.error.model.UserPreConditionFailed
 import br.lopes.goalapi.goal.api.controller.user.error.model.UserNotFound
-import br.lopes.goalapi.goal.api.data.entity.User
+import br.lopes.goalapi.goal.api.data.entity.Customer
 import br.lopes.goalapi.goal.api.data.repository.UserRepositoryContract
 import br.lopes.goalapi.goal.api.domain.service.UseCaseContract
 import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
@@ -28,9 +27,9 @@ import java.time.LocalDateTime
 
 class UpdateUserUC @Autowired constructor(
         private val userRepositoryContract: UserRepositoryContract
-): UseCaseContract<UserEntity, User> {
+): UseCaseContract<UserEntity, Customer> {
 
-    override fun execute(input: UserEntity): User {
+    override fun execute(input: UserEntity): Customer {
         val userId = input.id ?: 0
         val userDb = userRepositoryContract.findById(userId)
         if(userDb.isPresent) {

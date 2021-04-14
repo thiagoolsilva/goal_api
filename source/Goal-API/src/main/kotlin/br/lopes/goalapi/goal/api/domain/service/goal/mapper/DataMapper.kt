@@ -18,7 +18,6 @@ package br.lopes.goalapi.goal.api.domain.service.goal.mapper
 
 import br.lopes.goalapi.goal.api.data.entity.Goal
 import br.lopes.goalapi.goal.api.data.entity.History
-import br.lopes.goalapi.goal.api.data.entity.User
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalHistoryEntity
 import br.lopes.goalapi.goal.api.domain.service.history.model.HistoryEntity
@@ -30,7 +29,7 @@ fun Goal.toGoalEntity() = GoalEntity(
         description = this.description,
         totalPrice = this.totalPrice,
         dtEndGoal = this.dtEndGoal,
-        userId = this.user.id,
+        userId = this.customer.id,
         amount =  this.history.map { it.value }.sum(),
         entityVersion = this.version
 )

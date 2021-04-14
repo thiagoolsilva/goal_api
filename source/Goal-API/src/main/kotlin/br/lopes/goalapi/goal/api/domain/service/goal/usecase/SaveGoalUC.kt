@@ -24,7 +24,6 @@ import br.lopes.goalapi.goal.api.domain.service.goal.mapper.toGoalDb
 import br.lopes.goalapi.goal.api.domain.service.goal.model.GoalEntity
 import org.springframework.beans.factory.annotation.Autowired
 import java.lang.IllegalArgumentException
-import java.time.LocalDateTime
 
 class SaveGoalUC @Autowired constructor(
         private val goalRepositoryContract: GoalRepositoryContract,
@@ -37,7 +36,7 @@ class SaveGoalUC @Autowired constructor(
             val userDb = userRepositoryContract.getOne(input.userId)
 
             goalDb = input.toGoalDb()
-            goalDb.user = userDb
+            goalDb.customer = userDb
 
             return goalRepositoryContract.save(goalDb)
         } else {

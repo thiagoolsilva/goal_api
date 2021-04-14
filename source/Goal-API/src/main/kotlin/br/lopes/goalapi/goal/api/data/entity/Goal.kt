@@ -49,5 +49,5 @@ class Goal constructor(
     var history: MutableList<History> = mutableListOf()
 
     @ManyToOne(fetch = FetchType.LAZY)
-    lateinit var user: User
+    lateinit var customer: Customer
 }

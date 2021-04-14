@@ -42,6 +42,9 @@ dependencies {
 	// cache
 //	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+	// jdbc
+	implementation("org.postgresql:postgresql")
+
 	// dev dependencies
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 

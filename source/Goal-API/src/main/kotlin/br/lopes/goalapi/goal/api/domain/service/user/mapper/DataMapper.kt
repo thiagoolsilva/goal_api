@@ -16,11 +16,11 @@
 
 package br.lopes.goalapi.goal.api.domain.service.user.mapper
 
-import br.lopes.goalapi.goal.api.data.entity.User
+import br.lopes.goalapi.goal.api.data.entity.Customer
 import br.lopes.goalapi.goal.api.domain.service.user.model.UserEntity
 import java.time.LocalDateTime
 
-fun UserEntity.toUserDb() = User(
+fun UserEntity.toUserDb() = Customer(
         id = this.id ?: 0,
         name = this.name,
         nickname = this.nickname,
@@ -28,7 +28,7 @@ fun UserEntity.toUserDb() = User(
         dtUpdate = null
 )
 
-fun User.toUserEntity() = UserEntity(
+fun Customer.toUserEntity() = UserEntity(
         id = this.id,
         name = this.name,
         nickname = this.nickname,
