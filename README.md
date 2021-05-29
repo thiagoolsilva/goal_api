@@ -74,7 +74,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project aims to help developers to create application that helps a person to reach their goals. 
+This project aims to help developers to create application that helps a person to reach their goals and to develope it It was used spring boot, JPA, Hibernate, Kotlin using clean architecture. 
+
 ### Built With
 
 To build the project you should have gradle installed.
@@ -119,13 +120,13 @@ Contributions are what make the open source community such an amazing place to b
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the Apache V2 License. See `LICENSE` for more information.
 
 
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/thiagoolsilva) - thiagoolsilva@gmail.com
+Thiago Lopes da Silva - [@thiagoolsilva](https://twitter.com/thiagoolsilva) - thiagoolsilva@gmail.com
 
 Project Link: [https://github.com/thiagoolsilva/goal_api](https://github.com/thiagoolsilva/goal_api)
 
