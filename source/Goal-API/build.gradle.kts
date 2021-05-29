@@ -39,14 +39,15 @@ dependencies {
 	// logging
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
 
-	// cache
-//	implementation("org.springframework.boot:spring-boot-starter-data-redis")
-
 	// jdbc
 	implementation("org.postgresql:postgresql")
 
-	// dev dependencies
+    // dev dependencies
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+	// swagger
+	implementation("io.springfox:springfox-swagger2:2.9.2")
+	implementation("io.springfox:springfox-swagger-ui:2.9.2")
 
 	// database in memory
 	runtimeOnly("com.h2database:h2")

@@ -17,12 +17,13 @@
 package br.lopes.goalapi.goal.api.controller.user
 
 import br.lopes.goalapi.goal.api.controller.ApiConstants
+import br.lopes.goalapi.goal.api.controller.ApiConstants.User.USER_PATH
 import br.lopes.goalapi.goal.api.controller.config.error.ErrorConstants.ApiError.GENERIC_ERROR_MESSAGE
 import br.lopes.goalapi.goal.api.controller.config.error.model.DataNotModified
 import br.lopes.goalapi.goal.api.controller.config.error.model.IfMatchNotProvided
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.contract.ErrorResponseMessage
-import br.lopes.goalapi.goal.api.controller.printError
+import br.lopes.goalapi.goal.api.controller.config.error.printError
 import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails
@@ -34,6 +35,9 @@ import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.Erro
 import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.NO_CONTENT_FOR_USER_NOT_FOUND
 import br.lopes.goalapi.goal.api.controller.user.error.UserApiErrorMessages.ErrorMessage.PRE_CONDITION_FAILED_FOR_USER_RESOURCE
 import br.lopes.goalapi.goal.api.controller.user.error.model.*
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import mu.KLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -48,7 +52,8 @@ import org.springframework.web.util.UriComponentsBuilder
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(ApiConstants.User.USER_PATH)
+@RequestMapping(USER_PATH)
+@Api(tags=[USER_PATH], hidden=false)
 class UserController {
 
     @Autowired
@@ -61,6 +66,16 @@ class UserController {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @ApiResponses(value = [
+        ApiResponse(
+            code = 400,
+            message = "Invalid provided User entity."
+        ),
+        ApiResponse(
+            code = 403,
+            message = "The provided user information already exists in database."
+        )
+    ])
     fun saveUser(
         @Valid @RequestBody userRequest: UserRequest,
         bindingResult: BindingResult,
@@ -97,6 +112,24 @@ class UserController {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @ApiResponses(value = [
+        ApiResponse(
+            code = 403,
+            message = "User not authorized to update the provided id."
+        ),
+        ApiResponse(
+            code = 400,
+            message = "Invalid provided User entity."
+        ),
+        ApiResponse(
+            code = 400,
+            message = "It was not provided the if-match with entity version."
+        ),
+        ApiResponse(
+            code = 412,
+            message = "The provided if-match value is not the same saved in database."
+        )
+    ])
     fun updateUser(
         @Valid @RequestBody userRequest: UpdateUserRequest,
         bindingResult: BindingResult,
@@ -141,6 +174,16 @@ class UserController {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @ApiResponses(value = [
+        ApiResponse(
+            code = 204,
+            message = "User not found."
+        ),
+        ApiResponse(
+            code = 304,
+            message = "User not changed."
+        )
+    ])
     fun getUserById(
         @PathVariable id: Long,
         @RequestHeader headers: Map<String,String>

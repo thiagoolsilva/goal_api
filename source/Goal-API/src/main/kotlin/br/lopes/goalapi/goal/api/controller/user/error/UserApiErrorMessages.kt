@@ -21,7 +21,7 @@ import org.springframework.http.HttpStatus
 class UserApiErrorMessages {
     companion object ErrorMessage {
         val NO_CONTENT_FOR_USER_NOT_FOUND = Pair(HttpStatus.NO_CONTENT, "User not found.")
-        val NOT_MODIFIED_FOR_USER_DATA = Pair(HttpStatus.NOT_MODIFIED, "User not changed")
+        val NOT_MODIFIED_FOR_USER_DATA = Pair(HttpStatus.NOT_MODIFIED, "User not changed.")
         val FORBIDDEN_FOR_USER_NOT_UPDATED = Pair(HttpStatus.FORBIDDEN, "User not authorized to update the provided id.")
         val BAD_REQUEST_FOR_INVALID_USER_ENTITY = Pair(HttpStatus.BAD_REQUEST, "Invalid provided User entity.")
         val FORBIDDEN_FOR_DUPLICATED_USER_ENTITY =

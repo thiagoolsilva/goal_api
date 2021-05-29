@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package br.lopes.goalapi.goal.api.controller
+package br.lopes.goalapi.goal.api.controller.config.error
 
 import mu.KLogger
 import org.springframework.validation.BindingResult

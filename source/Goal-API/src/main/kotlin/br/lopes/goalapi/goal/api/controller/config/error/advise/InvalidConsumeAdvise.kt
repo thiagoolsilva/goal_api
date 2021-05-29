@@ -17,9 +17,9 @@
 package br.lopes.goalapi.goal.api.controller.config.error.advise
 
 import br.lopes.goalapi.goal.api.controller.config.error.ErrorConstants.ApiError.UNSUPPORTED_MEDIA_TYPE
+import br.lopes.goalapi.goal.api.controller.config.error.printError
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
 import br.lopes.goalapi.goal.api.controller.contract.ErrorResponseMessage
-import br.lopes.goalapi.goal.api.controller.printError
 import mu.KLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
