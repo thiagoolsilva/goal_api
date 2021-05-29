@@ -19,7 +19,7 @@ package br.lopes.goalapi.goal.api.controller.user
 import br.lopes.goalapi.goal.api.controller.config.error.model.DataNotModified
 import br.lopes.goalapi.goal.api.controller.config.error.model.IfMatchNotProvided
 import br.lopes.goalapi.goal.api.controller.contract.ApiContract
-import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
+import br.lopes.goalapi.goal.api.controller.config.error.handleUserInputErrors
 import br.lopes.goalapi.goal.api.controller.user.contract.UpdateUserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserRequest
 import br.lopes.goalapi.goal.api.controller.user.contract.UserResponseDetails

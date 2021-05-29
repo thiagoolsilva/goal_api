@@ -17,6 +17,7 @@
 package br.lopes.goalapi.goal.api.controller.goal
 
 import br.lopes.goalapi.goal.api.controller.ApiConstants
+import br.lopes.goalapi.goal.api.controller.ApiConstants.Goal.GOAL_PATH
 import br.lopes.goalapi.goal.api.controller.config.error.ErrorConstants
 import br.lopes.goalapi.goal.api.controller.config.error.model.DataNotModified
 import br.lopes.goalapi.goal.api.controller.config.error.model.IfMatchNotProvided
@@ -32,7 +33,10 @@ import br.lopes.goalapi.goal.api.controller.goal.error.model.GoalNotFoundExcepti
 import br.lopes.goalapi.goal.api.controller.goal.error.model.GoalPreConditionFailed
 import br.lopes.goalapi.goal.api.controller.goal.error.model.InvalidGoalInputException
 import br.lopes.goalapi.goal.api.controller.goal.error.model.UpdateGoalNotSupported
-import br.lopes.goalapi.goal.api.controller.printError
+import br.lopes.goalapi.goal.api.controller.config.error.printError
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import mu.KLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -44,10 +48,13 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
+import javax.persistence.EntityNotFoundException
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(ApiConstants.Goal.GOAL_PATH)
+@RequestMapping(GOAL_PATH)
+@Api(tags=[GOAL_PATH], hidden=false)
+@io.swagger.annotations.SwaggerDefinition()
 class GoalController {
 
     @Autowired
@@ -61,9 +68,19 @@ class GoalController {
         produces = [MediaType.APPLICATION_JSON_VALUE],
         consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @ApiResponses(value = [
+        ApiResponse(
+            code = 404,
+            message = "Invalid provided Goal ID."
+        ),
+        ApiResponse(
+            code = 304,
+            message = "Goal not changed."
+        )
+    ])
     fun getGoalById(
         @PathVariable id: Long,
-        @RequestHeader(HttpHeaders.IF_NONE_MATCH) ifNoneMatch: String?,
+        @RequestHeader(HttpHeaders.IF_NONE_MATCH, required = false) ifNoneMatch: String?,
     ): ResponseEntity<ApiContract<GoalResponse>> {
         var apiContract = ApiContract<GoalResponse>(null, null)
         var entityVersion = 0L
@@ -79,8 +96,11 @@ class GoalController {
                 .body(apiContract)
         } catch (error: Exception) {
             error.printError(logger)
-
             when (error) {
+                is GoalNotFoundException -> {
+                    apiContract.errorMessage = ErrorResponseMessage(NOT_FOUND_FOR_GOAL_ID.second)
+                    ResponseEntity.status(NOT_FOUND_FOR_GOAL_ID.first).body(apiContract)
+                }
                 is DataNotModified -> {
                     apiContract.errorMessage = ErrorResponseMessage(NOT_MODIFIED_FOR_GOAL_DATA.second)
                     ResponseEntity.status(NOT_MODIFIED_FOR_GOAL_DATA.first).body(apiContract)
@@ -117,6 +137,12 @@ class GoalController {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @ApiResponses(value = [
+        ApiResponse(
+            code = 400,
+            message = "Invalid provided Goal entity."
+        )
+    ])
     fun saveGoal(
         @RequestBody @Valid saveGoalRequest: SaveGoalRequest,
         bindingResult: BindingResult,
@@ -156,11 +182,29 @@ class GoalController {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @ApiResponses(value = [
+        ApiResponse(
+            code = 404,
+            message = "Invalid provided Goal ID."
+        ),
+        ApiResponse(
+            code = 400,
+            message = "Invalid provided Goal entity."
+        ),
+        ApiResponse(
+            code = 400,
+            message = "It was not provided the if-match with entity version."
+        ),
+        ApiResponse(
+            code = 412,
+            message = "The provided if-match value is not the same saved in database."
+        )
+    ])
     fun updateGoal(
         @PathVariable id: Long,
         @RequestBody @Valid updateGoalRequest: UpdateGoalRequest,
         bindingResult: BindingResult,
-        @RequestHeader(HttpHeaders.IF_MATCH) ifMatch: String?,
+        @RequestHeader(HttpHeaders.IF_MATCH, required = false) ifMatch: String?,
     ): ResponseEntity<ApiContract<GoalResponse>> {
         var apiContract = ApiContract<GoalResponse>(null, null)
         return try {
@@ -200,6 +244,16 @@ class GoalController {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @ApiResponses(value = [
+        ApiResponse(
+            code = 404,
+            message = "Invalid provided Goal ID."
+        ),
+        ApiResponse(
+            code = 400,
+            message = "Invalid provided Goal entity."
+        )
+    ])
     fun saveGoalHistory(
         @PathVariable id: Long,
         @RequestBody @Valid saveGoalHistoryRequest: SaveGoalHistoryRequest,
@@ -248,6 +302,12 @@ class GoalController {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @ApiResponses(value = [
+        ApiResponse(
+            code = 404,
+            message = "Invalid provided Goal ID."
+        )
+    ])
     fun deleteGoal(@PathVariable id: Long): ResponseEntity<Unit> {
         return try {
             handler.deleteGoalById(id)

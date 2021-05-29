@@ -23,7 +23,7 @@ class GoalApiErrorMessages {
         val BAD_REQUEST_FOR_INVALID_GOAL_ENTITY = Pair(HttpStatus.BAD_REQUEST, "Invalid provided Goal entity.")
         val BAD_REQUEST_FOR_IF_MATCH_NOT_PROVIDED = Pair(HttpStatus.BAD_REQUEST, "It was not provided the if-match with entity version.")
         val PRE_CONDITION_FAILED_FOR_GOAL_RESOURCE = Pair(HttpStatus.PRECONDITION_FAILED, "The provided if-match value is not the same saved in database.")
-        val NOT_FOUND_FOR_GOAL_ID = Pair(HttpStatus.FORBIDDEN, "Invalid provided Goal ID.")
-        val NOT_MODIFIED_FOR_GOAL_DATA = Pair(HttpStatus.NOT_MODIFIED, "Goal not changed")
+        val NOT_FOUND_FOR_GOAL_ID = Pair(HttpStatus.NOT_FOUND, "Invalid provided Goal ID.")
+        val NOT_MODIFIED_FOR_GOAL_DATA = Pair(HttpStatus.NOT_MODIFIED, "Goal not changed.")
     }
 }

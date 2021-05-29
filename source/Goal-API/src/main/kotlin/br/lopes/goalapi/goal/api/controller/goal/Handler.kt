@@ -23,7 +23,7 @@ import br.lopes.goalapi.goal.api.controller.goal.error.model.InvalidGoalInputExc
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalEntity
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalHistoryResponse
 import br.lopes.goalapi.goal.api.controller.goal.mapper.toGoalResponse
-import br.lopes.goalapi.goal.api.controller.handleUserInputErrors
+import br.lopes.goalapi.goal.api.controller.config.error.handleUserInputErrors
 import br.lopes.goalapi.goal.api.controller.config.error.model.IfMatchNotProvided
 import br.lopes.goalapi.goal.api.controller.config.error.model.DataNotModified
 import br.lopes.goalapi.goal.api.domain.service.goal.GoalConstants
@@ -44,17 +44,21 @@ class Handler constructor(
     fun getGoalById(id: Long,
                     ifNoneMatch:String?,
           onGoalIdFinished: (body: ApiContract<GoalResponse>, entityVersion:Long) -> Unit)  {
-        val response = ApiContract<GoalResponse>(null, null)
-        val goalDb = goalServiceContract.findGoalById(id)
+        try {
+            val response = ApiContract<GoalResponse>(null, null)
+            val goalDb = goalServiceContract.findGoalById(id)
 
-        if(ifNoneMatch != null && ifNoneMatch.isNotEmpty() && goalDb.entityVersion == ifNoneMatch.toLong()) {
-            throw DataNotModified("Goal data not modified.")
+            if (ifNoneMatch != null && ifNoneMatch.isNotEmpty() && goalDb.entityVersion == ifNoneMatch.toLong()) {
+                throw DataNotModified("Goal data not modified.")
+            }
+            response.body = goalDb.toGoalResponse()
+
+            val entityVersion = goalDb.entityVersion ?: 0
+
+            onGoalIdFinished(response, entityVersion)
+        } catch (entityNotFoundException: EntityNotFoundException) {
+            throw GoalNotFoundException("Goal not found", entityNotFoundException)
         }
-        response.body = goalDb.toGoalResponse()
-
-        val entityVersion = goalDb.entityVersion ?: 0
-
-        onGoalIdFinished(response, entityVersion)
     }
 
     fun getGoalHistoryById(id: Long, pageable: Pageable): ApiContract<Page<GoalHistoryResponse>> {
